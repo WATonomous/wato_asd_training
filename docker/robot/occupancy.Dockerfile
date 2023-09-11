@@ -46,3 +46,13 @@ COPY docker/wato_ros_entrypoint.sh /home/docker/wato_ros_entrypoint.sh
 COPY docker/.bashrc /home/docker/.bashrc
 ENTRYPOINT ["/usr/local/bin/fixuid", "-q", "/home/docker/wato_ros_entrypoint.sh"]
 CMD ["ros2", "launch", "occupancy", "occupancy.launch.py"]
+
+# ================= Debug ===================
+FROM repo as debug
+
+USER root:root
+
+# For C++ debugging
+RUN apt-get update && apt-get install -y gdb gdbserver
+
+USER docker:docker

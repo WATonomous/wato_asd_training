@@ -3,8 +3,9 @@
 
 #include "occupancy_node.hpp"
 
-OccupancyNode::OccupancyNode() : Node("occupancy"), occupancy_(robot::OccupancyCore()) {
-
+OccupancyNode::OccupancyNode() 
+  : Node("occupancy"), occupancy_(robot::OccupancyCore()) 
+{
   // Initialize ROS2 Constructs
   lidar_sub_ = 
   this->create_subscription<sensor_msgs::msg::LaserScan>(
@@ -21,16 +22,23 @@ OccupancyNode::OccupancyNode() : Node("occupancy"), occupancy_(robot::OccupancyC
   );
 }
 
-void OccupancyNode::pose_callback(const nav_msgs::msg::Odometry::SharedPtr msg) {
+void OccupancyNode::pose_callback(
+  const nav_msgs::msg::Odometry::SharedPtr msg)
+{
   // Odometry gives pose with covariance (->pose), we only need 
   // its pose (therefore ->pose.pose)
   latest_pose_ = msg->pose.pose;
 }
 
-void OccupancyNode::laserscan_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
+void OccupancyNode::laserscan_callback(
+  const sensor_msgs::msg::LaserScan::SharedPtr msg) 
+{
   nav_msgs::msg::OccupancyGrid occupancy_msg;
+  occupancy_msg.data = occupancy_.get_occupancy_data(msg);
+  occupancy_msg.info = occupancy_.get_meta_map_data();
+  occupancy_msg.info.origin = latest_pose_;
 
-  occupancy_.get_occupancy_data(msg);
+  occupancy_pub_->publish(occupancy_msg);
 }
 
 int main(int argc, char ** argv)

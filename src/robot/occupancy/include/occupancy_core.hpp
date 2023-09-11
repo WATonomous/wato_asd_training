@@ -20,19 +20,28 @@ class OccupancyCore {
   public:
     explicit OccupancyCore();
 
-    void polar_to_rect();
+    const nav_msgs::msg::MapMetaData get_meta_map_data();
 
-    void init_map_metadata();
-
-    void set_time();
-
-    const int* get_occupancy_data(sensor_msgs::msg::LaserScan::SharedPtr laser_scan);
+    const std::vector<int8_t, std::allocator<int8_t>> get_occupancy_data(
+      sensor_msgs::msg::LaserScan::SharedPtr laser_scan
+    );
   
   private:
     nav_msgs::msg::MapMetaData map_meta_data_;
+    std::vector<int8_t, std::allocator<int8_t>> row_major_data_; 
 
-    int row_major_data_[MAP_HEIGHT * MAP_WIDTH];
+    void set_time_();
 
+    void init_map_metadata_();
+
+    void clear_row_major_();
+
+    void polar_to_row_major_(
+      const double& angle_max,
+      const double& angle_min,
+      const double& angle_i,
+      const std::vector<float, std::allocator<float>>& ranges
+    );
 };
 
 }  
