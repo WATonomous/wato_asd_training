@@ -14,11 +14,10 @@ namespace robot
  */
 class OccupancyCore {
   public:
-    static constexpr int MAP_HEIGHT = 20, MAP_WIDTH = 20;
-    static constexpr float MAP_RES = 1;
+    static constexpr float MAP_HEIGHT_BASE = 40, MAP_WIDTH_BASE = 40;
     
   public:
-    explicit OccupancyCore();
+    explicit OccupancyCore(float map_resolution);
 
     const nav_msgs::msg::MapMetaData get_meta_map_data();
 
@@ -29,12 +28,13 @@ class OccupancyCore {
   private:
     nav_msgs::msg::MapMetaData map_meta_data_;
     std::vector<int8_t, std::allocator<int8_t>> row_major_data_; 
+    float map_res_, map_height_, map_width_;
 
-    void set_time_();
-
-    void init_map_metadata_();
+    void init_map_metadata_(float map_resolution);
 
     void clear_row_major_();
+
+    void filter_ranges_(std::vector<float, std::allocator<float>>& ranges);
 
     void polar_to_row_major_(
       const double& angle_max,

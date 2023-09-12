@@ -5,5 +5,5 @@
 # .bashrc is sourced.
 source /home/docker/ament_ws/install/setup.bash
 
-alias clearws="rm -rf build/ && rm -rf install/"
-alias debugbuild="colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo && source install/setup.bash"
+alias clw="rm -rf build/ && rm -rf install/"
+alias dbd="colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo && source install/setup.bash"

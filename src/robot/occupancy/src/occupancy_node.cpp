@@ -4,17 +4,12 @@
 #include "occupancy_node.hpp"
 
 OccupancyNode::OccupancyNode() 
-  : Node("occupancy"), occupancy_(robot::OccupancyCore()) 
+  : Node("occupancy"), occupancy_(robot::OccupancyCore(0.25))
 {
   // Initialize ROS2 Constructs
   lidar_sub_ = 
   this->create_subscription<sensor_msgs::msg::LaserScan>(
-    "/lidar", 10, std::bind(&OccupancyNode::laserscan_callback, this, std::placeholders::_1)
-  );
-
-  pose_sub_ = 
-  this->create_subscription<nav_msgs::msg::Odometry>(
-    "/model/robot/pose", 10, std::bind(&OccupancyNode::pose_callback, this, std::placeholders::_1)
+    "/lidar", 10, std::bind(&OccupancyNode::laserscan_callback_, this, std::placeholders::_1)
   );
 
   occupancy_pub_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>(
@@ -22,23 +17,27 @@ OccupancyNode::OccupancyNode()
   );
 }
 
-void OccupancyNode::pose_callback(
-  const nav_msgs::msg::Odometry::SharedPtr msg)
-{
-  // Odometry gives pose with covariance (->pose), we only need 
-  // its pose (therefore ->pose.pose)
-  latest_pose_ = msg->pose.pose;
-}
-
-void OccupancyNode::laserscan_callback(
+void OccupancyNode::laserscan_callback_(
   const sensor_msgs::msg::LaserScan::SharedPtr msg) 
 {
   nav_msgs::msg::OccupancyGrid occupancy_msg;
-  occupancy_msg.data = occupancy_.get_occupancy_data(msg);
-  occupancy_msg.info = occupancy_.get_meta_map_data();
-  occupancy_msg.info.origin = latest_pose_;
 
+  // Populate Header
+  occupancy_msg.header.stamp = get_time_();
+  occupancy_msg.header.frame_id = msg->header.frame_id;
+
+  // Populate Data
+  occupancy_msg.info = occupancy_.get_meta_map_data();
+  occupancy_msg.data = occupancy_.get_occupancy_data(msg);
+  occupancy_msg.info.map_load_time = get_time_();
+
+  // Publish
   occupancy_pub_->publish(occupancy_msg);
+}
+
+rclcpp::Time OccupancyNode::get_time_()
+{
+  return this->get_clock()->now();
 }
 
 int main(int argc, char ** argv)
