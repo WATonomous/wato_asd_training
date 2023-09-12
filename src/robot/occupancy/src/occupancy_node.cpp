@@ -3,8 +3,8 @@
 
 #include "occupancy_node.hpp"
 
-OccupancyNode::OccupancyNode() 
-  : Node("occupancy"), occupancy_(robot::OccupancyCore(0.25))
+OccupancyNode::OccupancyNode(float map_resolution) 
+  : Node("occupancy"), occupancy_(robot::OccupancyCore(map_resolution))
 {
   // Initialize ROS2 Constructs
   lidar_sub_ = 
@@ -27,7 +27,7 @@ void OccupancyNode::laserscan_callback_(
   occupancy_msg.header.frame_id = msg->header.frame_id;
 
   // Populate Data
-  occupancy_msg.info = occupancy_.get_meta_map_data();
+  occupancy_msg.info = occupancy_.get_map_meta_data();
   occupancy_msg.data = occupancy_.get_occupancy_data(msg);
   occupancy_msg.info.map_load_time = get_time_();
 
@@ -43,7 +43,8 @@ rclcpp::Time OccupancyNode::get_time_()
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<OccupancyNode>());
+  // We set a map resolution of 0.5 here
+  rclcpp::spin(std::make_shared<OccupancyNode>(0.5));
   rclcpp::shutdown();
   return 0;
 }

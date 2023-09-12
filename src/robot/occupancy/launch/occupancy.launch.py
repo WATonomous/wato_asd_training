@@ -4,10 +4,9 @@ from launch_ros.actions import Node
 import os
 
 def generate_launch_description():
-    """Launch occupancy node."""
-
     occupancy_node = Node(
         package='occupancy',
+        name='occupancy_node',
         executable='occupancy_node',
         output='screen'
     )

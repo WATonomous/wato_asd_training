@@ -9,7 +9,7 @@
 ##   - robot            :   starts up your ROS2 nodes
 
 
-ACTIVE_PROFILES="vis_tools gazebo robot"
+# ACTIVE_PROFILES=""
 
 ## Name to append to docker containers. DEFAULT = <your_watcloud_username>
 

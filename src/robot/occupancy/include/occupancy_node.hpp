@@ -13,7 +13,7 @@ class OccupancyNode : public rclcpp::Node {
     /**
     * Occupancy node constructor.
     */
-    OccupancyNode();
+    OccupancyNode(float map_resolution);
 
   private:
     // ROS2 Subscription node callback used to process laserscan data coming 
