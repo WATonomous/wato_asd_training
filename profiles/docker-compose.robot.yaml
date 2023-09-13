@@ -8,7 +8,6 @@ services:
         - "${ROBOT_OCCUPANCY_IMAGE:?}:${TAG}"
         - "${ROBOT_OCCUPANCY_IMAGE:?}:main"
     image: "${ROBOT_OCCUPANCY_IMAGE:?}:${TAG}"
-    command: tail -F anything
     security_opt:
       - seccomp:${PROFILES_DIR}/seccomp_profile.json 
     user: ${FIXUID:?}:${FIXGID:?}
