@@ -663,6 +663,7 @@
             <plugin 
                 filename="libignition-gazebo-pose-publisher-system.so" 
                 name="ignition::gazebo::systems::PosePublisher">
+                <topicName>tf</topicName>
                 <publish_link_pose>true</publish_link_pose>
                 <publish_sensor_pose>true</publish_sensor_pose>
                 <publish_collision_pose>false</publish_collision_pose>

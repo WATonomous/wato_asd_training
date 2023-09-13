@@ -14,7 +14,15 @@ def generate_launch_description():
         package='control',
         executable='control_node'
     )
-
+    forward_turtlesim_commands_to_second_turtlesim_node = Node(
+            package='turtlesim',
+            executable='mimic',
+            name='mimic',
+            remappings=[
+                ('/input/pose', '/turtlesim1/turtle1/pose'),
+                ('/output/cmd_vel', '/turtlesim2/turtle1/cmd_vel'),
+            ]
+        )
     return LaunchDescription([
         node
     ])
