@@ -2,7 +2,7 @@
 
 #include "nav_node.hpp"
 
-NavNode::NavNode(): Node("transformer"), nav_(robot::NavCore())
+NavNode::NavNode(): Node("navigation"), nav_(robot::NavCore())
 {
 
 }
