@@ -44,7 +44,7 @@ int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
   // We set a map resolution of 0.5 here
-  rclcpp::spin(std::make_shared<OccupancyNode>(0.5));
+  rclcpp::spin(std::make_shared<OccupancyNode>(1));
   rclcpp::shutdown();
   return 0;
 }

@@ -19,7 +19,7 @@ class ControlNode : public rclcpp::Node {
   private:
     robot::ControlCore control_;
 
-    rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr goal_pose_sub_;
+    rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr next_point_sub_;
     
     std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
     std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
@@ -28,9 +28,9 @@ class ControlNode : public rclcpp::Node {
     
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
 
-    geometry_msgs::msg::PointStamped goal_pose;
+    geometry_msgs::msg::PointStamped next_point;
 
-    void goal_pose_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
+    void next_point_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
     void control_timer_callback();
 };
 
