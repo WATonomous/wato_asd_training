@@ -77,13 +77,13 @@ void OccupancyCore::polar_to_row_major_(
   for (int i = 0; i < ranges.size(); i++) {
     if (ranges[i] < 0) { continue; }
     float cur_angle = angle_min + (angle_i * i);
-    float range_with_offset = ranges[i] - RANGE_OFFSET;
+    // We offset the range a bit to avoid collision further in
+    // advance
+    float range_with_offset = ranges[i] - RANGE_OFFSET * map_res_;
 
     // polar to rect with trig yields a coordinate plane centered
     // around the robot, we need to translate it for the grid
     geometry_msgs::msg::PointStamped point;
-
-    point.header.frame_id = 'robot';
 
     point.point.x = range_with_offset * std::cos(cur_angle);
     point.point.y = range_with_offset * std::sin(cur_angle);
@@ -91,12 +91,13 @@ void OccupancyCore::polar_to_row_major_(
 
     auto point_transformed = geometry_msgs::msg::PointStamped();
 
+    // transform to the sim_world frame
     tf2::doTransform(point, point_transformed, transform);
 
     point_transformed.point.x = std::round((point_transformed.point.x / map_res_) + (map_width_ / 2));
     point_transformed.point.y = std::round((point_transformed.point.y / map_res_) + (map_height_ / 2));
 
-    // check if we are out of range, and then populate row-major
+    // check if we are out of range, if not then populate row-major
     if (std::abs(point_transformed.point.y - map_height_) > 0 && std::abs(point_transformed.point.x - map_width_) > 0) {
       row_major_data_[int(point_transformed.point.x + point_transformed.point.y * map_height_)] = 1;
     }

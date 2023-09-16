@@ -33,7 +33,7 @@ void OccupancyNode::laserscan_callback_(
   geometry_msgs::msg::TransformStamped transform;
 
   try {
-    transform = tf_buffer_->lookupTransform("sim_world", "robot", tf2::TimePointZero);
+    transform = tf_buffer_->lookupTransform("sim_world", "robot/chassis/gpu_lidar", tf2::TimePointZero);
   } catch (const tf2::TransformException & ex) {
     RCLCPP_INFO(this->get_logger(), "Could not transform %s", ex.what());
   }
@@ -57,7 +57,7 @@ int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
   // We set a map resolution of 0.5 here
-  rclcpp::spin(std::make_shared<OccupancyNode>(1));
+  rclcpp::spin(std::make_shared<OccupancyNode>(0.5));
   rclcpp::shutdown();
   return 0;
 }
