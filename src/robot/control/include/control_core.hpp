@@ -15,9 +15,8 @@ class ControlCore {
     float calculate_angular(geometry_msgs::msg::Point local_goal_pose);
 
   private:
-    float kP_linear = 1;
-    float kP_angular = 1;
-
+    float kP_linear = 0.75;
+    float kP_angular = 0.75;
 
 };
 

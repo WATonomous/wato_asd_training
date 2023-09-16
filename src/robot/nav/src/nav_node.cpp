@@ -11,7 +11,7 @@ NavNode::NavNode(): Node("navigation"), nav_(robot::NavCore())
     "/path_marker", 10
   );
 
-  goal_point_sub_ = this->create_subscription<geometry_msgs::msg::PointStamped>("/goal_pose", 20, 
+  goal_point_sub_ = this->create_subscription<geometry_msgs::msg::PointStamped>("/goal_point", 20, 
     std::bind(&NavNode::goal_point_callback, this, std::placeholders::_1));
 
   next_point_pub_ = this->create_publisher<geometry_msgs::msg::PointStamped>("/next_point", 20);

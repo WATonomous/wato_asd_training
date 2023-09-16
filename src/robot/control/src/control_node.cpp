@@ -4,14 +4,14 @@
 
 ControlNode::ControlNode(): Node("control"), control_(robot::ControlCore())
 {
-  next_point_sub_ = this->create_subscription<geometry_msgs::msg::PointStamped>("/next_point", 20, 
+  next_point_sub_ = this->create_subscription<geometry_msgs::msg::PointStamped>("/goal_point", 20, 
     std::bind(&ControlNode::next_point_callback, this, std::placeholders::_1));
 
   tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
   
   using namespace std::chrono_literals;
-  control_timer_ = this->create_wall_timer(1000ms, std::bind(&ControlNode::control_timer_callback, this));
+  control_timer_ = this->create_wall_timer(100ms, std::bind(&ControlNode::control_timer_callback, this));
 
   cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 20);
 
