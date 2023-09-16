@@ -77,7 +77,7 @@ void OccupancyCore::polar_to_row_major_(
   for (int i = 0; i < ranges.size(); i++) {
     if (ranges[i] < 0) { continue; }
     float cur_angle = angle_min + (angle_i * i);
-    float range_with_offset = ranges[i];
+    float range_with_offset = ranges[i] - RANGE_OFFSET;
 
     // polar to rect with trig yields a coordinate plane centered
     // around the robot, we need to translate it for the grid
