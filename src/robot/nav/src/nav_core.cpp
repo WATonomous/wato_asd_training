@@ -35,7 +35,7 @@ namespace robot
     }
 
     // You can use a few heuristics : manhattan, euclidean or octagonal.
-    generator.setHeuristic(AStar::Heuristic::euclidean);
+    generator.setHeuristic(AStar::Heuristic::manhattan);
     generator.setDiagonalMovement(true);
 
     // This method returns vector of coordinates from target to source.
@@ -45,8 +45,8 @@ namespace robot
 
     for(auto& coordinate : path) {
       auto point = geometry_msgs::msg::Point();
-      point.x = coordinate.x * resolution + origin_x;
-      point.y = coordinate.y * resolution + origin_y;
+      point.x = coordinate.x * resolution + origin_x + resolution/2;
+      point.y = coordinate.y * resolution + origin_y + resolution/2;
       points.push_back(point);
     }
 

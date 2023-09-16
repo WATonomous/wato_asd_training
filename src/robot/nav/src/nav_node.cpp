@@ -30,8 +30,8 @@ void NavNode::occupancy_callback(nav_msgs::msg::OccupancyGrid::SharedPtr occupan
   geometry_msgs::msg::TransformStamped world_to_robot;
 
   try {
-    robot_to_world = tf_buffer_->lookupTransform("sim_world", "robot", tf2::TimePointZero);
-    world_to_robot = tf_buffer_->lookupTransform("robot", "sim_world", tf2::TimePointZero);
+    robot_to_world = tf_buffer_->lookupTransform("sim_world", "robot/chassis/gpu_lidar", tf2::TimePointZero);
+    world_to_robot = tf_buffer_->lookupTransform("robot/chassis/gpu_lidar", "sim_world", tf2::TimePointZero);
   } catch (const tf2::TransformException & ex) {
     RCLCPP_INFO(this->get_logger(), "Could not transform %s", ex.what());
   }
