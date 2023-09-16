@@ -8,8 +8,8 @@
 ##   - samples          :   starts up sample nodes for reference
 ##   - robot            :   starts up your ROS2 nodes
 
+# ACTIVE_PROFILES=""
 
-ACTIVE_PROFILES="vis_tools gazebo samples robot"
 
 ## Name to append to docker containers. DEFAULT = <your_watcloud_username>
 

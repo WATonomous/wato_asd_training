@@ -82,7 +82,7 @@ void OccupancyCore::polar_to_row_major_(
     int y = std::round((ranges[i] * std::sin(cur_angle) / map_res_) + (map_height_ / 2));
 
     // check if we are out of range, and then populate row-major
-    if (std::abs(y - map_height) > 0 && std::abs(x - map_width) > 0) {
+    if (std::abs(y - map_height_) > 0 && std::abs(x - map_width_) > 0) {
       row_major_data_[x + y * map_height_] = 1;
     }
   }
