@@ -2,8 +2,17 @@
 #define OCCUPANCY_CORE_HPP_
 
 #include "nav_msgs/msg/occupancy_grid.hpp"
+#include "nav_msgs/msg/odometry.hpp"
 #include "sensor_msgs/msg/laser_scan.hpp"
 #include "geometry_msgs/msg/pose.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "geometry_msgs/msg/point_stamped.hpp"
+
+#include "tf2_ros/transform_broadcaster.h"
+#include "tf2/exceptions.h"
+#include "tf2_ros/transform_listener.h"
+#include "tf2_ros/buffer.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 
 namespace robot
 {
@@ -15,7 +24,7 @@ namespace robot
 class OccupancyCore {
   public:
     // Constants used for base map size
-    static constexpr float MAP_HEIGHT_BASE = 40, MAP_WIDTH_BASE = 40;
+    static constexpr float MAP_HEIGHT_BASE = 40, MAP_WIDTH_BASE = 40, RANGE_OFFSET = 1;
     
   public:
     /**
@@ -35,10 +44,13 @@ class OccupancyCore {
      * @param laser_scan the laser scan message
     */
     const std::vector<int8_t, std::allocator<int8_t>> get_occupancy_data(
-      sensor_msgs::msg::LaserScan::SharedPtr laser_scan
+      const sensor_msgs::msg::LaserScan::SharedPtr laser_scan,
+      const geometry_msgs::msg::TransformStamped& transform
     );
   
   private:
+    // Latest Odom from robot
+    geometry_msgs::msg::PoseWithCovariance latest_pose_;
     // Map Meta Data Structure
     nav_msgs::msg::MapMetaData map_meta_data_;
     // Row Major Data Structure
@@ -76,7 +88,8 @@ class OccupancyCore {
     void polar_to_row_major_(
       const double& angle_min,
       const double& angle_i,
-      const std::vector<float, std::allocator<float>>& ranges
+      const std::vector<float, std::allocator<float>>& ranges,
+      geometry_msgs::msg::TransformStamped transform
     );
 };
 
