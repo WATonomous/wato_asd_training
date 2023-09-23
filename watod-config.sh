@@ -9,6 +9,9 @@
 
 
 # ACTIVE_PROFILES="gazebo vis_tools"
+ACTIVE_PROFILES= "gazebo vis_tools" #this is how you run one part of the stack instead of just the whole stack
+#ACTIVE_PROFILES="samples" #dont make too muchimages (like 100 and nuke the server lol)
+#run with ./watod up
 
 ## Name to append to docker containers. DEFAULT = <your_watcloud_username>
 
