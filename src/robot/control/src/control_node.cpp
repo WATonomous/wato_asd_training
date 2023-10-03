@@ -14,7 +14,7 @@ ControlNode::ControlNode(): Node("control"), control_(robot::ControlCore())
 }
 
 void ControlNode::sub_callback(const nav_msgs::msg::Odometry::SharedPtr msg){
-  RCLCPP_INFO(this->get_logger(), "x = ", msg->pose.pose.position.x);
+  RCLCPP_INFO(this->get_logger(), "x = %f , y = %f , z = %f", msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z);
 }
 
 void ControlNode::timer_callback(){
