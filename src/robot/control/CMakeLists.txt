@@ -15,10 +15,9 @@ find_package(ament_cmake REQUIRED) # ROS2 build tool
 find_package(rclcpp REQUIRED)      # ROS2 C++ package
 find_package(sample_msgs REQUIRED) # Custom package containing ROS2 messages
 find_package(geometry_msgs REQUIRED)
-find_package(tf2 REQUIRED)
+find_package(nav_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
-find_package(std_msgs REQUIRED)
 
 # Compiles source files into a library
 # A library is not executed, instead other executables can link
@@ -36,11 +35,10 @@ target_include_directories(control_lib
 ament_target_dependencies(control_lib
   rclcpp
   sample_msgs
-  geometry_msgs
-  tf2
+  geometry_msgs  
+  nav_msgs      
   tf2_ros
-  tf2_geometry_msgs
-  std_msgs)
+  tf2_geometry_msgs)
 
 # Create ROS2 node executable from source files
 add_executable(control_node src/control_node.cpp)
