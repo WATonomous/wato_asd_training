@@ -42,7 +42,7 @@ class ControlNode : public rclcpp::Node {
 
     // Deliverable 6.3
     double Kp_linear = 0.5;
-    double Kp_angular = 0.5;
+    double Kp_angular = 0.2;
 
     // Deliverable 6.4
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr twistpublisher_;

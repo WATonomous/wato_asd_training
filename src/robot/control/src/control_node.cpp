@@ -18,7 +18,7 @@ void ControlNode::subscription_callback(const nav_msgs::msg::Odometry::SharedPtr
   auto x = msg->pose.pose.position.x;
   auto y = msg->pose.pose.position.y;
   auto z = msg->pose.pose.position.z;
-  RCLCPP_INFO(get_logger(), "X: %f | Y: %f | Z: %f", x, y, z);
+  //RCLCPP_INFO(get_logger(), "X: %f | Y: %f | Z: %f", x, y, z);
 }
 
 // Deliverable 6.1
