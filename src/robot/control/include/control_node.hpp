@@ -21,6 +21,9 @@ rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscriber_;
 rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr goal_point_subscriber_;
 // rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odometry_subscriber;
 rclcpp::TimerBase::SharedPtr goal_point_timer_;
+rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr goal_point_publisher_;
+std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
 
 class ControlNode : public rclcpp::Node {
   public:
@@ -34,6 +37,7 @@ class ControlNode : public rclcpp::Node {
 
   private:
     robot::ControlCore control_;
+    geometry_msgs::msg::PointStamped transformed_point;
     
     
     
