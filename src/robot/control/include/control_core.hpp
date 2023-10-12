@@ -6,11 +6,12 @@
 namespace robot
 {
 
-class ControlCore {
+  class ControlCore
+  {
   public:
     ControlCore();
-};
+  };
 
-} 
+}
 
-#endif 
+#endif

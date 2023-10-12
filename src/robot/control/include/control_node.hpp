@@ -19,6 +19,12 @@ class ControlNode : public rclcpp::Node {
 
   private:
     robot::ControlCore control_;
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscriber_;
+    rclcpp::TimerBase::SharedPtr timer_;
+    void example_callback(std_msgs::msg::String msg);
+    void time_callback();
+
 };
 
 #endif
