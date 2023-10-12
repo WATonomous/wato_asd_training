@@ -11,19 +11,25 @@
 #include "tf2_ros/transform_listener.h"
 #include "tf2_ros/buffer.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
-#include "std_msgs/msg/string.h"
+#include "std_msgs/msg/string.hpp"
+
+rclcpp::TimerBase::SharedPtr timer_;
+rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscriber_;
 
 class ControlNode : public rclcpp::Node {
   public:
     ControlNode();
+    void example_callback(std_msgs::msg::String::SharedPtr msg);
+    void timer_callback();
+    
 
   private:
     robot::ControlCore control_;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
-    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscriber_;
-    rclcpp::TimerBase::SharedPtr timer_;
-    void example_callback(std_msgs::msg::String msg);
-    void time_callback();
+    
+    
+    
+    
 
 };
 

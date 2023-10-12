@@ -1,11 +1,12 @@
 #include <memory>
 #include "control_node.hpp"
 
+
 ControlNode::ControlNode() : Node("control"), control_(robot::ControlCore())
 {
-  publisher_ = this->create_publisher<std_msgs::msg::String>("/example_string", 160);
+  publisher_ = this->create_publisher<std_msgs::msg::String>("/example_string", 20);
   subscriber_ = this->create_subscription<std_msgs::msg::String>(
-    "/example_string", 160,
+    "/example_string", 20,
     std::bind(&ControlNode::example_callback, this, std::placeholders::_1)
   );
   timer_ = this->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&ControlNode::timer_callback, this));
@@ -19,7 +20,7 @@ void ControlNode::timer_callback()
   publisher_->publish(msg);
 }
 
-void ControlNode::example_callback(const std_msgs::msg::String::SharedPtr msg)
+void ControlNode::example_callback(std_msgs::msg::String::SharedPtr msg)
 {
   RCLCPP_INFO(this->get_logger(), "This is a subscription callback: %s", msg->data.c_str());
 }
