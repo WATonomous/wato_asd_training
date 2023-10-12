@@ -10,18 +10,26 @@
 #include "tf2/exceptions.h"
 #include "tf2_ros/transform_listener.h"
 #include "tf2_ros/buffer.h"
-#include "tf2_geometry_msgs/tf2_geometry_msgs.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #include "std_msgs/msg/string.hpp"
+// #include "nav_msgs/msg/odometry.hpp"
+
 
 rclcpp::TimerBase::SharedPtr timer_;
 rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
 rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscriber_;
+rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr goal_point_subscriber_;
+// rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odometry_subscriber;
+rclcpp::TimerBase::SharedPtr goal_point_timer_;
 
 class ControlNode : public rclcpp::Node {
   public:
     ControlNode();
     void example_callback(std_msgs::msg::String::SharedPtr msg);
     void timer_callback();
+    void goal_timer_callback();
+    // void odometry_callback(nav_msgs::msg::Odometry::SharedPtr msg);
+    void goal_point_callback(geometry_msgs::msg::PointStamped::SharedPtr msg);
     
 
   private:
