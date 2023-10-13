@@ -4,7 +4,7 @@
 
 NavNode::NavNode(): Node("transformer"), nav_(robot::NavCore())
 {
-  
+
 }
 
 int main(int argc, char ** argv)
