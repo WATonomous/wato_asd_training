@@ -47,5 +47,6 @@
         "streambuf": "cpp",
         "typeinfo": "cpp"
     },
-    "cmake.sourceDirectory": "/home/avidave/wato_asd_training/src/robot/control"
+    "cmake.sourceDirectory": "/home/avidave/wato_asd_training/src/robot/control",
+    "cmake.configureOnOpen": false
 }
