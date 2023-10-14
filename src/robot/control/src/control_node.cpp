@@ -31,9 +31,9 @@ ControlNode::ControlNode(): Node("control"), control_(robot::ControlCore())
 }
 
 void ControlNode::sub_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg) {
-  // RCLCPP_INFO(this->get_logger(),
-  // "\n\nX = %f \nY = %f \nZ = %f \n\n",
-  // msg->point.x, msg->point.y, msg->point.z);
+  RCLCPP_INFO(this->get_logger(),
+  "\n\nX = %f \nY = %f \nZ = %f \n\n",
+  msg->point.x, msg->point.y, msg->point.z);
 
   original_point.point = msg->point;
 }
@@ -48,36 +48,18 @@ void ControlNode::timer_callback() {
     ex.what());
   }
 
-  RCLCPP_INFO(this->get_logger(), "RECEIVED %s",
-  "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-
-  RCLCPP_INFO(this->get_logger(), "RECEIVED %f    %f",
-  this->original_point.point.x, this->original_point.point.y);
-
   auto transformed_point = geometry_msgs::msg::PointStamped();
 
   tf2::doTransform(this->original_point, transformed_point, this->transform);
-
-  RCLCPP_INFO(this->get_logger(), "RECEIVED TRANSFORMED %f    %f",
-  transformed_point.point.x, transformed_point.point.y);
 
   double Kp_linear = 0.5;
   double Kp_angular = 0.5;
   Kp_linear = Kp_linear * transformed_point.point.x;
   Kp_angular = Kp_angular * transformed_point.point.y;
 
-  //auto twist_msg = geometry_msgs::msg::Twist();
-
   twist_msg = geometry_msgs::msg::Twist();
   this->twist_msg.linear.x = Kp_linear;
-  // this->twist_msg.linear.y = 0;
-  // this->twist_msg.linear.z = 0;
-  // this->twist_msg.angular.x = 0;
-  // this->twist_msg.angular.y = 0;
   this->twist_msg.angular.z = Kp_angular;
-
-  RCLCPP_INFO(this->get_logger(), "\n\nX=%f\nY=%f\n\n",
-  Kp_linear, Kp_angular);
 
   publisher_->publish(twist_msg);
 }
