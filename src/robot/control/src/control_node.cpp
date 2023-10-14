@@ -39,8 +39,6 @@ void ControlNode::sub_callback(const geometry_msgs::msg::PointStamped::SharedPtr
 }
 
 void ControlNode::timer_callback() {
-  // RCLCPP_INFO(this->get_logger(), "RECEIVED %s",
-  // "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
   try {
     this->transform = tf_buffer_->lookupTransform("robot", "sim_world",
@@ -50,12 +48,21 @@ void ControlNode::timer_callback() {
     ex.what());
   }
 
+  RCLCPP_INFO(this->get_logger(), "RECEIVED %s",
+  "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+
+  RCLCPP_INFO(this->get_logger(), "RECEIVED %f    %f",
+  this->original_point.point.x, this->original_point.point.y);
+
   auto transformed_point = geometry_msgs::msg::PointStamped();
 
   tf2::doTransform(this->original_point, transformed_point, this->transform);
 
-  int Kp_linear = 0.5;
-  int Kp_angular = 0.5;
+  RCLCPP_INFO(this->get_logger(), "RECEIVED TRANSFORMED %f    %f",
+  transformed_point.point.x, transformed_point.point.y);
+
+  double Kp_linear = 0.5;
+  double Kp_angular = 0.5;
   Kp_linear = Kp_linear * transformed_point.point.x;
   Kp_angular = Kp_angular * transformed_point.point.y;
 
