@@ -12,17 +12,18 @@
 #include "tf2_ros/buffer.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 #include "std_msgs/msg/string.h"
+#include "std_msgs/msg/string.hpp"
+
+rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_; //Deliverable 5.2
+rclcpp::TimerBase::SharedPtr timer_; //Deliverable 5.1
 
 class ControlNode : public rclcpp::Node {
   public:
     ControlNode();
+    void timer_callback();
 
   private:
-    robot::ControlCore control_;
-
-    //Deliverable 5.1
-    rclcpp::TimerBase::SharedPtr timer_;
-    void timer_callback();
+    robot::ControlCore control_; 
     
 };
 
