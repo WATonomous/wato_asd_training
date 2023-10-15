@@ -4,7 +4,10 @@
 
 ControlNode::ControlNode(): Node("control"), control_(robot::ControlCore())
 {
-
+  //Deliverable 5.3
+  subscriber_ = this->create_subscription<nav_msgs::msg::Odometry>(
+    "/model/robot/odometry", 20, 
+    std::bind(&ControlNode::subscription_callback, this, std::placeholders::_1));
   //Deliverable 5.2
   publisher_ = this->create_publisher<std_msgs::msg::String>("/example_string", 20);
   //Deliverable 5.1
@@ -23,6 +26,15 @@ void ControlNode::timer_callback()
   msg.data = "Publishing Message";
   publisher_->publish(msg);
   
+}
+
+void ControlNode::subscription_callback(const nav_msgs::msg::Odometry::SharedPtr msg)
+{
+  //Deliverable 5.3
+  double x = msg->pose.pose.position.x;
+  double y = msg->pose.pose.position.y;
+  double z = msg->pose.pose.position.z;
+  RCLCPP_INFO(this->get_logger(), "Position: x: %f, y: %f, z: %f", x, y, z);
 }
 
 int main(int argc, char ** argv)
