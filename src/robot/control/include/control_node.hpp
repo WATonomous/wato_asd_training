@@ -22,6 +22,11 @@
 rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr subscriber_; //Deliverable 6.1
 rclcpp::TimerBase::SharedPtr timer_; //Deliverable 6.1
 
+//Deliverable 6.2
+std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+
+
 
 class ControlNode : public rclcpp::Node {
   public:
