@@ -15,16 +15,24 @@
 #include "std_msgs/msg/string.hpp"
 #include "nav_msgs/msg/odometry.hpp"
 
-rclcpp::TimerBase::SharedPtr timer_; //Deliverable 5.1
-rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_; //Deliverable 5.2
-rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr subscriber_; //Deliverable 5.3
+// rclcpp::TimerBase::SharedPtr timer_; //Deliverable 5.1
+// rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_; //Deliverable 5.2
+// rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr subscriber_; //Deliverable 5.3
+
+rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr subscriber_; //Deliverable 6.1
+rclcpp::TimerBase::SharedPtr timer_; //Deliverable 6.1
 
 
 class ControlNode : public rclcpp::Node {
   public:
     ControlNode();
+    //Deliverable 5
+    //void timer_callback();
+    //void subscription_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
+
+    //Deliverable 6
+    void subscription_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
     void timer_callback();
-    void subscription_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
 
   private:
     robot::ControlCore control_; 
