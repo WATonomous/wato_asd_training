@@ -26,6 +26,9 @@ ControlNode::ControlNode(): Node("control"), control_(robot::ControlCore())
   //Deliverable 6.2
   tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
+
+  //Deliverable 6.4
+  publisher_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 20);
   
   
 }
@@ -38,19 +41,11 @@ void ControlNode::subscription_callback(const geometry_msgs::msg::PointStamped::
   double z = msg->point.z;
   RCLCPP_INFO(this->get_logger(), "Position: x: %f, y: %f, z: %f", x, y, z);
 
-  //Deliverable 6.2
-  geometry_msgs::msg::TransformStamped transform;
+  goal = *msg;
+  
 
 
-  try {
-      transform = tf_buffer_->lookupTransform("robot", "sim_world", tf2::TimePointZero);
-  } catch (const tf2::TransformException & ex) {
-      RCLCPP_INFO(this->get_logger(), "Could not transform %s", ex.what());
-  }
-
-  auto transformed_point = geometry_msgs::msg::PointStamped();
-  tf2::doTransform(*msg, transformed_point, transform);
-  RCLCPP_INFO(this->get_logger(), "Transformed Point: x: %f, y: %f, z: %f", transformed_point.point.x, transformed_point.point.y, transformed_point.point.z );
+  
 
 
 }
@@ -58,7 +53,29 @@ void ControlNode::subscription_callback(const geometry_msgs::msg::PointStamped::
 void ControlNode::timer_callback()
 {
   //Deliverable 6.1
-  RCLCPP_INFO(this->get_logger(), "Timer Message"); 
+  //RCLCPP_INFO(this->get_logger(), "Timer Message"); 
+  //Deliverable 6.2
+  geometry_msgs::msg::TransformStamped transform;
+
+  try {
+      transform = tf_buffer_->lookupTransform("robot", "sim_world", tf2::TimePointZero);
+  } catch (const tf2::TransformException & ex) {
+      RCLCPP_INFO(this->get_logger(), "Could not transform %s", ex.what());
+  }
+
+  //auto transformed_point = geometry_msgs::msg::PointStamped();
+  tf2::doTransform(goal, transformed_point, transform);
+  RCLCPP_INFO(this->get_logger(), "Transformed Point: x: %f, y: %f, z: %f", transformed_point.point.x, transformed_point.point.y, transformed_point.point.z );
+  double Kp_linear = 0.5;
+  double Kp_angular = 0.15;
+  double x = Kp_linear * transformed_point.point.x; 
+  double y = Kp_angular * transformed_point.point.y;
+  geometry_msgs::msg::Twist twist;
+  twist.linear.x = x;
+  twist.angular.z = y;
+
+  publisher_->publish(twist);
+  RCLCPP_INFO(this->get_logger(), "Publishing Message: x: %f, y: %f", x, y);
 }
 
 // void ControlNode::timer_callback()

@@ -26,6 +26,9 @@ rclcpp::TimerBase::SharedPtr timer_; //Deliverable 6.1
 std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
 std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
 
+rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_; //Deliverable 6.4
+
+
 
 
 class ControlNode : public rclcpp::Node {
@@ -38,9 +41,13 @@ class ControlNode : public rclcpp::Node {
     //Deliverable 6
     void subscription_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
     void timer_callback();
+    
+
 
   private:
     robot::ControlCore control_; 
+    geometry_msgs::msg::PointStamped transformed_point; //Deliverable 6.3
+    geometry_msgs::msg::PointStamped goal; 
     
 };
 
