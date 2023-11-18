@@ -85,7 +85,7 @@
           "colorField": "ring",
           "colorMode": "gradient",
           "colorMap": "turbo",
-          "pointSize": 9,
+          "pointSize": 5,
           "pointShape": "circle",
           "gradient": [
             "rgba(100, 47, 105, 1)",

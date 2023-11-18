@@ -18,7 +18,12 @@ class ControlNode : public rclcpp::Node {
     ControlNode();
 
   private:
+    // rclpp::Publisher<Unfiltered>::SharedPtr publisher_;
+    rclpp::TimerBase::SharedPtr timer_;
     robot::ControlCore control_;
+
+    void timer_callback();
+
 };
 
 #endif
