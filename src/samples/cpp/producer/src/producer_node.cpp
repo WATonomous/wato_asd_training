@@ -41,7 +41,7 @@ void ProducerNode::timer_callback()
     std::chrono::system_clock::now().time_since_epoch()).count();
   producer_.serialize_coordinates(msg);
 
-  RCLCPP_INFO(this->get_logger(), "---Publishing:s");
+  RCLCPP_INFO(this->get_logger(), "Publishing: %s", msg.data.c_str());
   data_pub_->publish(msg);
 }
 
@@ -57,7 +57,7 @@ rcl_interfaces::msg::SetParametersResult ProducerNode::parameters_callback(
       parameter.get_type() == rclcpp::ParameterType::PARAMETER_INTEGER)
     {
       producer_.update_velocity(parameter.as_int());
-      RCLCPP_INFO(this->get_logger(), "Publishing: %s", msg.data.c_str());
+      RCLCPP_INFO(this->get_logger(), "Velocity successfully set to %d", parameter.as_int());
       result.successful = true;
     }
   }
