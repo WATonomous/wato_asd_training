@@ -17,7 +17,9 @@ class TransformerCore
 {
 public:
   // Size of buffer before processed messages are published.
-  static constexpr int BUFFER_CAPACITY = 10;
+
+  // deliverable 4.0.1
+  static constexpr int BUFFER_CAPACITY = 20;
 
 public:
   /**
