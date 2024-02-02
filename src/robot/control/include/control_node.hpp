@@ -20,7 +20,10 @@ class ControlNode : public rclcpp::Node {
   private:
     robot::ControlCore control_;
 
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr msg_pub_;
+
     rclcpp::TimerBase::SharedPtr timer_;
+
     void timer_callback();
 };
 
