@@ -14,29 +14,24 @@
 #include "std_msgs/msg/string.hpp"
 #include "nav_msgs/msg/odometry.hpp"
 
+std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+
+rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr goal_point_publisher_;
+rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr goal_point_subscriber_;
+rclcpp::TimerBase::SharedPtr timer_;
+
 class ControlNode : public rclcpp::Node {
   public:
     ControlNode();
+    void timer_callback();
+    void goal_point_callback(geometry_msgs::msg::PointStamped::SharedPtr msg);
     
   private:
-    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
-    std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
-
     robot::ControlCore control_;
 
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr msg_pub_;
-    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr goal_point_publisher_;
-
-    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_subscriber_;
-    rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr goal_point_subscriber_;
-
-    rclcpp::TimerBase::SharedPtr timer_;
-
     geometry_msgs::msg::PointStamped transformed_point;
-
-    void timer_callback();
-    // void odom_callback(nav_msgs::msg::Odometry::SharedPtr msg);
-    void goal_point_callback(geometry_msgs::msg::PointStamped::SharedPtr msg);
+    geometry_msgs::msg::PointStamped goal_point;
 };
 
 #endif

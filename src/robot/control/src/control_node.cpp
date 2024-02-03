@@ -39,10 +39,18 @@ ControlNode::ControlNode(): Node("control"), control_(robot::ControlCore())
 }
 
 void ControlNode::timer_callback() {
-  const double Kp_linear = 0.5;
-  const double Kp_angular = 0.1;
-
+  geometry_msgs::msg::TransformStamped transform;
   geometry_msgs::msg::Twist control_signal;
+  const double Kp_linear = 0.5;
+  const double Kp_angular = 0.2;
+
+  try {
+    transform = tf_buffer_->lookupTransform("robot", "sim_world", tf2::TimePointZero);
+  } catch (const tf2::TransformException & ex) {
+      RCLCPP_INFO(this->get_logger(), "Could not transform %s", ex.what());
+  }
+
+  tf2::doTransform(goal_point, transformed_point, transform);
 
   control_signal.linear.x = Kp_linear * transformed_point.point.x;
   control_signal.angular.z = Kp_angular * transformed_point.point.y;
@@ -53,21 +61,9 @@ void ControlNode::timer_callback() {
 }
 
 void ControlNode::goal_point_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg) {
-  auto xpos = msg->point.x;
-  auto ypos = msg->point.y;
-  auto zpos = msg->point.z;
-
-  RCLCPP_INFO(this->get_logger(), "Goal co-ords: [x,y,z] = [%f, %f, %f]", xpos, ypos, zpos);
-
-  geometry_msgs::msg::TransformStamped transform;
-
-  try {
-    transform = tf_buffer_->lookupTransform("robot", "sim_world", tf2::TimePointZero);
-  } catch (const tf2::TransformException & ex) {
-      RCLCPP_INFO(this->get_logger(), "Could not transform %s", ex.what());
-  }
-
-  tf2::doTransform(*msg, transformed_point, transform);
+  goal_point = *msg;
+  
+  RCLCPP_INFO(this->get_logger(), "[x,y,z] = [%f, %f, %f]", goal_point.point.x, goal_point.point.y, goal_point.point.z);
 }
 
 // Deliverable 5.x
