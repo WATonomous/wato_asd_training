@@ -40,7 +40,7 @@ ControlNode::ControlNode(): Node("control"), control_(robot::ControlCore())
 
 void ControlNode::timer_callback() {
   const double Kp_linear = 0.5;
-  const double Kp_angular = 0.5;
+  const double Kp_angular = 0.1;
 
   geometry_msgs::msg::Twist control_signal;
 
