@@ -24,8 +24,8 @@ class ControlNode : public rclcpp::Node {
     robot::ControlCore control_;
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr string_publisher;
-    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr subscriber_;
+    // rclcpp::Publisher<std_msgs::msg::String>::SharedPtr string_publisher;
+    // rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr subscriber_;
     rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr geo_subscriber_;
     
     std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
@@ -36,7 +36,7 @@ class ControlNode : public rclcpp::Node {
     double Kp_angular{0.5};
 
     void timer_callback();
-    void subscription_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
+    // void subscription_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
     void geo_subscription_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
 };
 

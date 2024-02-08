@@ -5,7 +5,7 @@ ControlNode::ControlNode(): Node("control"), control_(robot::ControlCore())
   timer_ = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&ControlNode::timer_callback, this));
   
   publisher_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 20);
-  string_publisher = this->create_publisher<std_msgs::msg::String>("/example_string",20);
+  // string_publisher = this->create_publisher<std_msgs::msg::String>("/example_string",20);
 
   // subscriber_= this->create_subscription<nav_msgs::msg::Odometry>(
   //   "/model/robot/odometry", 20, 
@@ -38,7 +38,7 @@ void ControlNode::timer_callback(){
 
 
       double x_val = Kp_linear  * transformed_point.point.x;
-      double y_val = Kp_angular * transformed_point.point.z; 
+      double y_val = Kp_angular * transformed_point.point.y; 
 
       auto twist_message = geometry_msgs::msg::Twist();
       twist_message.linear.x = x_val;
@@ -50,14 +50,14 @@ void ControlNode::timer_callback(){
   catch (const tf2::TransformException & ex) {
       RCLCPP_INFO(this->get_logger(), "Could not transform %s", ex.what());
   }
-  RCLCPP_INFO(this->get_logger(), "timer called");
+  // RCLCPP_INFO(this->get_logger(), "timer called");
 
-  auto msg = std_msgs::msg::String();
+  // auto msg = std_msgs::msg::String();
   
-  msg.data = "publish msg";
+  // msg.data = "publish msg";
   
-  RCLCPP_INFO(this->get_logger(), "calling timer");
-  string_publisher->publish(msg);
+  // RCLCPP_INFO(this->get_logger(), "calling timer");
+  // string_publisher->publish(msg);
 
 }
 
