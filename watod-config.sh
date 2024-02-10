@@ -5,8 +5,10 @@
 ## Possible values:
 ##   - vis_tools        :   starts tools for data visualization (foxglove)
 ##   - gazebo           :   starts robot simulator (gazebo)
+##   - robot            :   starts up robot nodes
 ##   - samples          :   starts up sample nodes for reference
 
+# ACTIVE_PROFILES=""
 
 ACTIVE_PROFILES="vis_tools gazebo samples"
 
