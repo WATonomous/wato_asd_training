@@ -16,9 +16,11 @@
 class ControlNode : public rclcpp::Node {
   public:
     ControlNode();
-
+    void publish();
+   
   private:
     robot::ControlCore control_;
+    rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr publisher_;
 };
 
 #endif
