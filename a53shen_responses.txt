@@ -1,0 +1,35 @@
+3.0:
+ros2 used in /src/robot/control, nav, and occupancy 
+
+3.1.0:
+docker used in /docker
+
+3.1.1:
+Docker files: source code for building images, configure os and installs dependencies
+Docker images: read-only templates used to compile containers
+Docker containers: VM-like environments that are able to run software
+
+3.2.0:
+docker composer used in /profiles
+
+3.2.1:
+example env variable: ${ROBOT_NAV_IMAGE} in docker-compose.robot.yaml
+environment variables created in /scripts/watod-setup-env.sh
+
+3.2.2:
+writes environment variables to the ./env files
+./watod used to run watod-setup-env.sh
+env variables are used across the project, including profiles to include for docker compose
+
+3.2.3:
+watod is the projects service file, responsible for calling scripts, managing containers, and displaying server info
+containers can be started using the "wato up" command, stopped using "wato stop"
+"wato -t <container>" to start a terminal in a specific terminal
+"wato -all build" to build all containers from docker files
+
+3.2.4:
+Manufactoring plants can be used to describe the ASD infrastructure. Each plant (node) is designed for a specific function (core logic), and thus has the necessary tools and only those tools to reduce clutter. As a task is completed it communicates  and passes its output to a different plant for further processing. All the plants work in junction to transform the initial inputs to correct outputs.
+
+4.0.5:
+In the dockerfile for transformer, remove the last CMD to launch the transformer node when the container starts.
+
