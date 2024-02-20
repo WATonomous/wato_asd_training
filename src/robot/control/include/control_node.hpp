@@ -15,10 +15,13 @@
 
 class ControlNode : public rclcpp::Node {
   public:
-    ControlNode();
+    ControlNode(int delay_ms);
 
   private:
     robot::ControlCore control_;
+    
+    rclcpp::TimerBase::SharedPtr timer_;
+    void timer_callback();
 };
 
 #endif
