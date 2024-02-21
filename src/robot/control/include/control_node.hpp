@@ -29,6 +29,7 @@ class ControlNode : public rclcpp::Node {
     std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
     std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
     geometry_msgs::msg::Point transformed_point;
+    geometry_msgs::msg::TransformStamped transform;
     geometry_msgs::msg::Point goal_point;
     double Kp_linear;
     double Kp_angular;
