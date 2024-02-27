@@ -8,7 +8,7 @@
 ##   - robot            :   starts up robot nodes
 ##   - samples          :   starts up sample nodes for reference
 
-# ACTIVE_PROFILES=""
+ACTIVE_PROFILES="robot vis_tools gazebo"
 
 
 ## Name to append to docker containers. DEFAULT = <your_watcloud_username>
