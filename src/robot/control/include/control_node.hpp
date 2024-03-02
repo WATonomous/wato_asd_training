@@ -26,8 +26,8 @@ class ControlNode : public rclcpp::Node {
 
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
 
-    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr subscriber_;
-    void subscription_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
+    rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr subscriber_;
+    void subscription_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
 };
 
 #endif
