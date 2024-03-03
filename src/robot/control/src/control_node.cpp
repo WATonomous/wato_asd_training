@@ -42,7 +42,7 @@ void ControlNode::subscription_callback(const geometry_msgs::msg::PointStamped::
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<ControlNode>(500));
+  rclcpp::spin(std::make_shared<ControlNode>(100));
   rclcpp::shutdown();
   return 0;
 }
