@@ -28,6 +28,11 @@ class ControlNode : public rclcpp::Node {
 
     rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr subscriber_;
     void subscription_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
+
+    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+
+    geometry_msgs::msg::PointStamped goal_point_;
 };
 
 #endif
