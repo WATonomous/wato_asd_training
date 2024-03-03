@@ -24,7 +24,7 @@ class ControlNode : public rclcpp::Node {
     rclcpp::TimerBase::SharedPtr timer_;
     void timer_callback();
 
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_;
 
     rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr subscriber_;
     void subscription_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
@@ -33,6 +33,9 @@ class ControlNode : public rclcpp::Node {
     std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
 
     geometry_msgs::msg::PointStamped goal_point_;
+
+    const double KP_LINEAR = 0.5;
+    const double KP_ANGULAR = 0.3;
 };
 
 #endif

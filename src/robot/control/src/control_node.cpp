@@ -6,7 +6,7 @@
 ControlNode::ControlNode(int delay_ms): Node("control"), control_(robot::ControlCore()) {
   timer_ = this->create_wall_timer(std::chrono::milliseconds(delay_ms), std::bind(&ControlNode::timer_callback, this));
 
-  publisher_ = this->create_publisher<std_msgs::msg::String>("/example_string", 20);
+  publisher_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 20);
 
   subscriber_ = this->create_subscription<geometry_msgs::msg::PointStamped>("/goal_point", 20, std::bind(&ControlNode::subscription_callback, this, std::placeholders::_1));
 
@@ -17,10 +17,6 @@ ControlNode::ControlNode(int delay_ms): Node("control"), control_(robot::Control
 void ControlNode::timer_callback() {
   // RCLCPP_INFO(this->get_logger(), "log time");
 
-  // auto msg = std_msgs::msg::String();
-  // msg.data = "this works!!!";
-  // publisher_->publish(msg);
-
   geometry_msgs::msg::TransformStamped transform;
   try {
     transform = tf_buffer_->lookupTransform("robot", "sim_world", tf2::TimePointZero);
@@ -30,6 +26,11 @@ void ControlNode::timer_callback() {
 
   auto robot_point = geometry_msgs::msg::PointStamped();
   tf2::doTransform(goal_point_, robot_point, transform);
+
+  auto msg = geometry_msgs::msg::Twist();
+  msg.linear.x = KP_LINEAR*robot_point.point.x;         // linear control
+  msg.angular.z = KP_ANGULAR*robot_point.point.y;         // angular control
+  publisher_->publish(msg);
 
   RCLCPP_INFO(this->get_logger(), "transformed: (%f %f %f)", robot_point.point.x, robot_point.point.y, robot_point.point.z);
 }
