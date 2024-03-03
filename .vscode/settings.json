@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "Makefile": "c",
+        "*.c": "c",
+        "functional": "cpp"
+    }
+}
