@@ -12,7 +12,7 @@ def generate_launch_description():
 
     node = Node(
         package='control',
-        executable='control_node'
+        executable='timer_node'
     )
 
     return LaunchDescription([
