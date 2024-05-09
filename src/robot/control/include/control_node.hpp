@@ -19,6 +19,9 @@ class ControlNode : public rclcpp::Node {
 
   private:
     robot::ControlCore control_;
+    rclcpp::TimerBase::SharedPtr timer_;
+    void timer_callback();
+
 };
 
 #endif
