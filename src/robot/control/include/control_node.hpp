@@ -12,7 +12,6 @@
 #include "tf2_ros/buffer.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 #include "std_msgs/msg/string.hpp"
-#include "nav_msgs/msg/odometry.hpp"
 
 class ControlNode : public rclcpp::Node {
   public:
@@ -21,10 +20,15 @@ class ControlNode : public rclcpp::Node {
   private:
     robot::ControlCore control_;
     rclcpp::TimerBase::SharedPtr timer_;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
-    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr subscriber_;
+    rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr subscriber_;
+    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_;
+    geometry_msgs::msg::PointStamped last_goal_point;
+
+    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+      
     void timer_callback();
-    void subscription_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
+    void subscription_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
 
 
 };
