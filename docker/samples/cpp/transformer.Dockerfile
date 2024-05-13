@@ -28,3 +28,4 @@ COPY docker/wato_ros_entrypoint.sh /root/wato_ros_entrypoint.sh
 COPY docker/.bashrc /root/.bashrc
 ENTRYPOINT ["/root/wato_ros_entrypoint.sh"]
 CMD ["ros2", "launch", "transformer", "transformer.launch.py"]
+#CMD ["tail", "-f", "/dev/null"]
