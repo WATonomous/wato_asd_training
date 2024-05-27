@@ -10,15 +10,41 @@
 #include "tf2/exceptions.h"
 #include "tf2_ros/transform_listener.h"
 #include "tf2_ros/buffer.h"
-#include "tf2_geometry_msgs/tf2_geometry_msgs.h"
-#include "std_msgs/msg/string.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+#include "std_msgs/msg/string.hpp"
+#include "nav_msgs/msg/odometry.hpp"
 
 class ControlNode : public rclcpp::Node {
   public:
     ControlNode();
+    rclcpp::TimerBase::SharedPtr timer_;
+    void timer_callback();
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr subscriber_;
+    void subscription_callback(nav_msgs::msg::Odometry::SharedPtr);
+
+    geometry_msgs::msg::PointStamped goal_point;
+    rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr goalpose;
+    void goalpose_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
+
+    void control_timer_callback();
+    rclcpp::TimerBase::SharedPtr control_timer_;
+
+    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr twist_publisher_;
+
+    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+
+    double Kp_linear = 0.5;
+    double Kp_angular = 0.5;
+    double goal_point_transformed_x; 
+    double goal_point_transformed_y;
 
   private:
     robot::ControlCore control_;
+
+
+
 };
 
 #endif
