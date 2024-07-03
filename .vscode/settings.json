@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "functional": "cpp"
+    },
+    "cmake.sourceDirectory": "/home/syxie/wato_asd_training/src/robot/control"
+}
