@@ -10,8 +10,9 @@
 #include "tf2/exceptions.h"
 #include "tf2_ros/transform_listener.h"
 #include "tf2_ros/buffer.h"
-#include "tf2_geometry_msgs/tf2_geometry_msgs.h"
-#include "std_msgs/msg/string.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+#include "std_msgs/msg/string.hpp"
+#include "nav_msgs/msg/odometry.hpp"
 
 class ControlNode : public rclcpp::Node {
   public:
@@ -19,6 +20,21 @@ class ControlNode : public rclcpp::Node {
 
   private:
     robot::ControlCore control_;
+
+    rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr subscriber_;
+    void subscription_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
+
+    rclcpp::TimerBase::SharedPtr timer_;
+    void timer_callback();
+
+    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+    geometry_msgs::msg::PointStamped goal_point_;
+
+    double Kp_linear = 0.5;
+    double Kp_angular = 0.5;
+
+    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_;
 };
 
 #endif
