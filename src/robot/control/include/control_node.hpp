@@ -20,12 +20,21 @@ class ControlNode : public rclcpp::Node {
 
   private:
     robot::ControlCore control_;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
-    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr subscriber_;
+    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_;
+    rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr subscriber_;
     rclcpp::TimerBase::SharedPtr timer_;
 
     void timer_callback();
-    void sub_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
+    void sub_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
+
+    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+    geometry_msgs::msg::PointStamped goal_point_;
+
+    double kp_linear_;
+    double kp_angular_;
+
+    bool goal_recieved_;
 };
 
 #endif
