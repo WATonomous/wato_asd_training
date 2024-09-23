@@ -10,12 +10,21 @@
 #include "tf2/exceptions.h"
 #include "tf2_ros/transform_listener.h"
 #include "tf2_ros/buffer.h"
-#include "tf2_geometry_msgs/tf2_geometry_msgs.h"
-#include "std_msgs/msg/string.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+#include "std_msgs/msg/string.hpp"
+#include "nav_msgs/msg/odometry.hpp"
+
+using namespace std::chrono_literals;
 
 class ControlNode : public rclcpp::Node {
   public:
     ControlNode();
+    rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr subscriber_;
+
+    void timer_callback();
+    void subscription_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
 
   private:
     robot::ControlCore control_;
