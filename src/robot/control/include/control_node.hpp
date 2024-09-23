@@ -19,12 +19,21 @@ using namespace std::chrono_literals;
 class ControlNode : public rclcpp::Node {
   public:
     ControlNode();
-    rclcpp::TimerBase::SharedPtr timer_;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
-    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr subscriber_;
 
-    void timer_callback();
-    void subscription_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
+    rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr subscriber_;
+    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_;
+
+    rclcpp::TimerBase::SharedPtr timer_;
+    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+
+    geometry_msgs::msg::PointStamped goal_point;
+    
+    float Kp_linear = 0.5f;
+    float Kp_angular = 0.5f;
+
+    void control_callback();
+    void subscription_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
 
   private:
     robot::ControlCore control_;
