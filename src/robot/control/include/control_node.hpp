@@ -10,8 +10,8 @@
 #include "tf2/exceptions.h"
 #include "tf2_ros/transform_listener.h"
 #include "tf2_ros/buffer.h"
-#include "tf2_geometry_msgs/tf2_geometry_msgs.h"
-#include "std_msgs/msg/string.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+#include "std_msgs/msg/string.hpp"
 
 class ControlNode : public rclcpp::Node {
   public:
@@ -19,6 +19,19 @@ class ControlNode : public rclcpp::Node {
 
   private:
     robot::ControlCore control_;
+
+    rclcpp::TimerBase::SharedPtr timer_;
+    void timer_callback();
+
+    void subscription_callback(
+      const geometry_msgs::msg::Pose::SharedPtr msg);
+ 
+    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr raw_sub_;
+
+    // rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr control_pub_;
+
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr control_pub_;
+
 };
 
 #endif
