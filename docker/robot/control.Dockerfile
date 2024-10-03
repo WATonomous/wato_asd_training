@@ -4,6 +4,10 @@ FROM ros:humble AS base
 # ADD DEPENDENCIES HERE
 
 ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update && apt-get install -y \
+    ros-$ROS_DISTRO-nav-msgs  # Install the nav_msgs package
+
 RUN sudo chsh -s /bin/bash
 ENV SHELL=/bin/bash
 
