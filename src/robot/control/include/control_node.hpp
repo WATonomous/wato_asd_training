@@ -12,6 +12,7 @@
 #include "tf2_ros/buffer.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #include "std_msgs/msg/string.hpp"
+// #include "nav_msgs/msg/odometry.hpp"
 
 class ControlNode : public rclcpp::Node {
   public:
@@ -20,17 +21,26 @@ class ControlNode : public rclcpp::Node {
   private:
     robot::ControlCore control_;
 
+    geometry_msgs::msg::PointStamped goal_point_;
+
+    int count_;
+
+    double Kp_linear_;
+    double Kp_angular_;
+
+    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+
     rclcpp::TimerBase::SharedPtr timer_;
     void timer_callback();
 
-    void subscription_callback(
-      const geometry_msgs::msg::Pose::SharedPtr msg);
- 
-    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr raw_sub_;
+    void point_callback(
+      const geometry_msgs::msg::PointStamped::SharedPtr msg);
 
-    // rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr control_pub_;
+    rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr raw_sub_;
 
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr control_pub_;
+    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr control_pub_;
 
 };
 
