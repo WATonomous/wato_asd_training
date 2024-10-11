@@ -27,4 +27,6 @@ RUN . /opt/ros/$ROS_DISTRO/setup.sh && \
 COPY docker/wato_ros_entrypoint.sh /root/wato_ros_entrypoint.sh
 COPY docker/.bashrc /root/.bashrc
 ENTRYPOINT ["/root/wato_ros_entrypoint.sh"]
-CMD ["ros2", "launch", "transformer", "transformer.launch.py"]
+# CMD ["ros2", "launch", "transformer", "transformer.launch.py"]
+CMD ["tail", "-f", "/dev/null"] 
+# ^ Allows you to run the transformer container without spinning up the node instantly, make sure to rebuild docker compose and down the containers

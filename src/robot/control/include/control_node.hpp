@@ -11,7 +11,9 @@
 #include "tf2_ros/transform_listener.h"
 #include "tf2_ros/buffer.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
-#include "std_msgs/msg/string.h"
+#include "std_msgs/msg/string.hpp"
+#include "nav_msgs/msg/odometry.hpp"
+#include <geometry_msgs/msg/twist.hpp>
 
 class ControlNode : public rclcpp::Node {
   public:
@@ -19,6 +21,23 @@ class ControlNode : public rclcpp::Node {
 
   private:
     robot::ControlCore control_;
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr twistPublisher;
+    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr subscriber_;
+    rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr goalSubscriber;
+    rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::TimerBase::SharedPtr controlTimer;
+    void timer_callback();
+    void control_timer_callback();
+    void subscription_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
+    void goalSubscription_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
+
+    // Needed to access transform system
+    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+    geometry_msgs::msg::TransformStamped transform;
+
+    geometry_msgs::msg::PointStamped original_point_;
 };
 
 #endif
