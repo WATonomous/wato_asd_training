@@ -25,15 +25,18 @@ class ControlNode : public rclcpp::Node {
 
     rclcpp::TimerBase::SharedPtr timer_;
     void timer_callback();
+
+    static constexpr double kp_linear_ = 0.4;
+    static constexpr double kp_angular_ = 0.175;
  
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_;
 
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr subscriber_;
     void subscription_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
 
     rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr goal_point_subscriber_;
     void goal_point_subscription_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
-    geometry_msgs::msg::PointStamped transformed_goal_point_;
+    geometry_msgs::msg::PointStamped goal_point_;
 
     std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
     std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
