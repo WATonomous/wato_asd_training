@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>control</name>
+  <name>planner</name>
   <version>0.0.0</version>
   <description>A sample ROS package for pubsub communication</description>
 
@@ -11,10 +11,8 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>rclcpp</depend>
   <depend>geometry_msgs</depend>
-  <depend>tf2</depend>
-  <depend>tf2_ros</depend>
-  <depend>tf2_geometry_msgs</depend>
-  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>nav_msgs</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
