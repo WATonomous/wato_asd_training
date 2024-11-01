@@ -17,7 +17,7 @@ void ControlNode::timer_callback() {
   msg.data = sample_str;
 
   publisher_->publish(msg);
-  // RCLCPP_INFO(this->get_logger(), "Hello WATO! %lu", std::chrono::high_resolution_clock::now().time_since_epoch() / std::chrono::milliseconds(1));
+  RCLCPP_INFO(this->get_logger(), "Hello WATO! %lu", std::chrono::high_resolution_clock::now().time_since_epoch() / std::chrono::milliseconds(1));
 }
 
 void ControlNode::subscription_callback(const nav_msgs::msg::Odometry::SharedPtr msg_odom) {
