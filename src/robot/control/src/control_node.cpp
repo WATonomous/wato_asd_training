@@ -4,7 +4,11 @@
 
 ControlNode::ControlNode(): Node("control"), control_(robot::ControlCore())
 {
-  
+  timer_ = this->create_wall_timer(std::chrono::seconds(1), std::bind(&ControlNode::timer_callback, this));
+}
+
+void ControlNode::timer_callback() {
+  RCLCPP_INFO(this->get_logger(), "Hello WATO! %lu", std::chrono::high_resolution_clock::now().time_since_epoch() / std::chrono::milliseconds(1));
 }
 
 int main(int argc, char ** argv)
