@@ -26,7 +26,7 @@ class Transformer(Node):
         # Declare and get the parameters
         self.declare_parameter('version', 1)
         self.declare_parameter('compression_method', 0)
-        self.declare_parameter('buffer_capacity', 5)
+        self.declare_parameter('buffer_capacity', 10)
 
         self.__buffer_capacity = self.get_parameter('buffer_capacity') \
             .get_parameter_value().integer_value
