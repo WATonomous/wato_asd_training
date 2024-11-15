@@ -19,12 +19,9 @@ find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 
 # Compiles source files into a library
-# A library is not executed, instead other executables can link
-# against it to access defined methods and classes.
-# We build a library so that the methods defined can be used by
-# both the unit test and ROS2 node executables.
 add_library(control_lib
   src/control_core.cpp)
 # Indicate to compiler where to search for header files
@@ -46,10 +43,28 @@ ament_target_dependencies(control_lib
 add_executable(control_node src/control_node.cpp)
 # Link to the previously built library to access Transformer classes and methods
 target_link_libraries(control_node control_lib)
+# Ensure control_node knows where to find headers
+target_include_directories(control_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+
+# Create timer node executable
+add_executable(timer_node src/timer_node.cpp)
+# Specify dependencies for the timer node
+ament_target_dependencies(timer_node
+  rclcpp
+  std_msgs
+  nav_msgs  # Ensure this line is added
+  )
+# Ensure timer_node knows where to find headers
+target_include_directories(timer_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
 
 # Copy executable to installation location
 install(TARGETS
   control_node
+  timer_node
   DESTINATION lib/${PROJECT_NAME})
 
 # Copy launch files to installation location
