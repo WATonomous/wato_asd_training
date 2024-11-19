@@ -8,15 +8,15 @@
 ##   - robot            :   starts up robot nodes
 ##   - samples          :   starts up sample nodes for reference
 
-# ACTIVE_PROFILES=""
+ACTIVE_PROFILES="robot vis_tools gazebo"
 
 
 ## Name to append to docker containers. DEFAULT = <your_watcloud_username>
 
-# COMPOSE_PROJECT_NAME=""
+COMPOSE_PROJECT_NAME="rodneyshdong"
 
 
 ## Tag to use. Images are formatted as <IMAGE_NAME>:<TAG> with forward slashes replaced with dashes.
 ## DEFAULT = <your_current_github_branch> 
 
-# TAG=""
+TAG="rodneydong_training"
