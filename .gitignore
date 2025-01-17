@@ -1,5 +1,5 @@
 .env
 __pycache__
 .vscode/
-
+log
 watod-config.local.sh
