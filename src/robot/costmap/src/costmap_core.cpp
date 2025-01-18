@@ -5,9 +5,9 @@ namespace robot
 {
 
 CostmapCore::CostmapCore(const rclcpp::Logger& logger) : logger_(logger), 
-    width_cells(50),  height_cells(50), resolution(0.6), 
+    width_cells(40),  height_cells(40), resolution(0.5), 
     origin(std::make_pair(-1*width_cells/2*resolution, -1*height_cells/2*resolution)),
-    inflation_radius(1.2), inflation_radius_cells(inflation_radius/resolution), max_cost(90) {
+    inflation_radius(1.5), inflation_radius_cells(inflation_radius/resolution), max_cost(90) {
         
     grid_data_ = std::make_shared<nav_msgs::msg::OccupancyGrid>();
     initializeCostmap();
@@ -17,8 +17,8 @@ void CostmapCore::initializeCostmap() {
     grid_data_->info.width = width_cells;
     grid_data_->info.height = height_cells;
     grid_data_->info.resolution = resolution;
-    grid_data_->info.origin.position.x = -15;
-    grid_data_->info.origin.position.y = -15;
+    grid_data_->info.origin.position.x = -1 * origin.first;
+    grid_data_->info.origin.position.y = -1 * origin.first;
     grid_data_->info.origin.orientation.x = 0.0;
     grid_data_->info.origin.orientation.y = 0.0;
     grid_data_->info.origin.orientation.z = 0.0;
@@ -41,8 +41,6 @@ nav_msgs::msg::OccupancyGrid::SharedPtr CostmapCore::computeCostMap(
     }
     
     inflateObstacles();
-    // grid_data_->header = scan->header;
-    // grid_data_->header.frame_id = "sim_world";
     return grid_data_;
 }
 
