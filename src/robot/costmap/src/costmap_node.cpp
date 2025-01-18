@@ -15,8 +15,9 @@ CostmapNode::CostmapNode() : Node("costmap"), costmap_(robot::CostmapCore(this->
 
 void CostmapNode::lidar_callback(sensor_msgs::msg::LaserScan::SharedPtr scan) 
 {
-  nav_msgs::msg::OccupancyGrid costmap_msg = *costmap_.computeCostMap(scan);
-  costmap_pub_->publish(costmap_msg);
+  nav_msgs::msg::OccupancyGrid::SharedPtr costmap_msg = costmap_.computeCostMap(scan);
+  costmap_msg->header = scan->header;
+  costmap_pub_->publish(*costmap_msg);
 }
  
 int main(int argc, char ** argv)

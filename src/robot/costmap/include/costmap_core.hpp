@@ -25,7 +25,7 @@ class CostmapCore {
     
 
     std::pair<int, int> compute_grid_indices(double range, double angle);
-    void markObstacle(int x_grid, int y_grid);
+    void markObstacle(int row, int col);
     void inflateObstacles();
     double inflation_radius;
     int inflation_radius_cells;

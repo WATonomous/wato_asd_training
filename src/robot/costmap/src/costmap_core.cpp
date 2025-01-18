@@ -19,40 +19,44 @@ void CostmapCore::initializeCostmap() {
     grid_data_->info.resolution = resolution;
     grid_data_->info.origin.position.x = -15;
     grid_data_->info.origin.position.y = -15;
+    grid_data_->info.origin.orientation.x = 0.0;
+    grid_data_->info.origin.orientation.y = 0.0;
+    grid_data_->info.origin.orientation.z = 0.0;
     grid_data_->info.origin.orientation.w = 1;
 
-    grid_data_->data.resize(width_cells * height_cells, -1);
+    grid_data_->data.assign(width_cells * height_cells, 0);
 }
 
 nav_msgs::msg::OccupancyGrid::SharedPtr CostmapCore::computeCostMap(
     sensor_msgs::msg::LaserScan::SharedPtr scan) {
+    std::fill(grid_data_->data.begin(), grid_data_->data.end(), 0);
     for (size_t i = 0; i < scan->ranges.size(); ++i) {
         double angle = scan->angle_min + i * scan->angle_increment;
         double range = scan->ranges[i];
         if (range < scan->range_max && range > scan->range_min) {
             // Calculate grid coordinates
             auto indices = compute_grid_indices(range, angle);
-            markObstacle(indices.second, indices.first);
+            markObstacle(indices.first, indices.second);
         }
     }
     
     inflateObstacles();
-    grid_data_->header = scan->header;
+    // grid_data_->header = scan->header;
     // grid_data_->header.frame_id = "sim_world";
     return grid_data_;
 }
 
-void CostmapCore::markObstacle(int x_grid, int y_grid) {
-    if (x_grid >=0 && x_grid < width_cells && y_grid >= 0 && y_grid < height_cells) {
-        grid_data_->data[y_grid * width_cells + x_grid] = 100;
+void CostmapCore::markObstacle(int row, int col) {
+    if (col >=0 && col < width_cells && row >= 0 && row < height_cells) {
+        grid_data_->data[row * width_cells + col] = 100;
     }
 }
 
 std::pair<int, int> CostmapCore::compute_grid_indices(double range, double angle) {
-    double x = range * cos(angle);
-    double y = range * sin(angle);
-    int row = round((y - origin.second) / resolution);
-    int col = round((x - origin.first) / resolution);
+    double x = range * std::cos(angle);
+    double y = range * std::sin(angle);
+    int col = static_cast<int>(std::floor((x - grid_data_->info.origin.position.x) / resolution));
+    int row = static_cast<int>(std::floor((y - grid_data_->info.origin.position.y) / resolution));
 
     return {row, col};
 }
