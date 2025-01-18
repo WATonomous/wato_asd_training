@@ -17,10 +17,11 @@ void CostmapCore::initializeCostmap() {
     grid_data_->info.width = width_cells;
     grid_data_->info.height = height_cells;
     grid_data_->info.resolution = resolution;
-    grid_data_->info.origin.position.x = origin.first;
-    grid_data_->info.origin.position.y = origin.second;
+    grid_data_->info.origin.position.x = -15;
+    grid_data_->info.origin.position.y = -15;
+    grid_data_->info.origin.orientation.w = 1;
 
-    grid_data_->data.resize(width_cells * height_cells, 0);
+    grid_data_->data.resize(width_cells * height_cells, -1);
 }
 
 nav_msgs::msg::OccupancyGrid::SharedPtr CostmapCore::computeCostMap(
@@ -31,12 +32,13 @@ nav_msgs::msg::OccupancyGrid::SharedPtr CostmapCore::computeCostMap(
         if (range < scan->range_max && range > scan->range_min) {
             // Calculate grid coordinates
             auto indices = compute_grid_indices(range, angle);
-            markObstacle(indices.first, indices.second);
+            markObstacle(indices.second, indices.first);
         }
     }
     
     inflateObstacles();
     grid_data_->header = scan->header;
+    // grid_data_->header.frame_id = "sim_world";
     return grid_data_;
 }
 
