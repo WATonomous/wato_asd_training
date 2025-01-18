@@ -12,17 +12,17 @@ MapMemoryCore::MapMemoryCore(const rclcpp::Logger& logger)
 }
 
 void MapMemoryCore::initializeGlobalmap() {
-	grid_data_->info.width = width_cells;
-    grid_data_->info.height = height_cells;
-    grid_data_->info.resolution = resolution;
-    grid_data_->info.origin.position.x = -1 * origin.first;
-    grid_data_->info.origin.position.y = -1 * origin.first;
-    grid_data_->info.origin.orientation.x = 0.0;
-    grid_data_->info.origin.orientation.y = 0.0;
-    grid_data_->info.origin.orientation.z = 0.0;
-    grid_data_->info.origin.orientation.w = 1;
+	global_map_->info.width = width_cells;
+    global_map_->info.height = height_cells;
+    global_map_->info.resolution = resolution;
+    global_map_->info.origin.position.x = -1 * origin.first;
+    global_map_->info.origin.position.y = -1 * origin.first;
+    global_map_->info.origin.orientation.x = 0.0;
+    global_map_->info.origin.orientation.y = 0.0;
+    global_map_->info.origin.orientation.z = 0.0;
+    global_map_->info.origin.orientation.w = 1;
 
-    grid_data_->data.assign(width_cells * height_cells, 0);
+    global_map_->data.assign(width_cells * height_cells, 0);
 }
 
 nav_msgs::msg::OccupancyGrid::SharedPtr MapMemoryCore::integrateCostmap(

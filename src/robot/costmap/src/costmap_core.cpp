@@ -5,7 +5,7 @@ namespace robot
 {
 
 CostmapCore::CostmapCore(const rclcpp::Logger& logger) : logger_(logger), 
-    width_cells(40),  height_cells(40), resolution(0.5), 
+    width_cells(50),  height_cells(50), resolution(0.6), 
     origin(std::make_pair(-1*width_cells/2*resolution, -1*height_cells/2*resolution)),
     inflation_radius(1.5), inflation_radius_cells(inflation_radius/resolution), max_cost(90) {
         
@@ -17,8 +17,8 @@ void CostmapCore::initializeCostmap() {
     grid_data_->info.width = width_cells;
     grid_data_->info.height = height_cells;
     grid_data_->info.resolution = resolution;
-    grid_data_->info.origin.position.x = -1 * origin.first;
-    grid_data_->info.origin.position.y = -1 * origin.first;
+    grid_data_->info.origin.position.x = origin.first;
+    grid_data_->info.origin.position.y = origin.second;
     grid_data_->info.origin.orientation.x = 0.0;
     grid_data_->info.origin.orientation.y = 0.0;
     grid_data_->info.origin.orientation.z = 0.0;

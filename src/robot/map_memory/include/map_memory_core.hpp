@@ -17,7 +17,11 @@ class MapMemoryCore {
     rclcpp::Logger logger_;
     nav_msgs::msg::OccupancyGrid::SharedPtr global_map_;
 
-	bool is_global_map_init_ = false;
+	void initializeGlobalmap();
+	int width_cells;
+	int height_cells;
+	double resolution;
+	std::pair<double, double> origin;
 };
 
 }  
