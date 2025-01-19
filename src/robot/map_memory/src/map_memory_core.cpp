@@ -26,7 +26,7 @@ void MapMemoryCore::initializeGlobalmap() {
 }
 
 nav_msgs::msg::OccupancyGrid::SharedPtr MapMemoryCore::integrateCostmap(
-	nav_msgs::msg::OccupancyGrid::SharedPtr latest_costmap) {
+	nav_msgs::msg::OccupancyGrid::SharedPtr latest_costmap, double robot_x, double robot_y, double robot_yaw) {
 	
 	
 	
