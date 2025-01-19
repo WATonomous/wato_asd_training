@@ -1,101 +1,89 @@
-#include "tf2/LinearMath/Quaternion.h"
-#include "tf2/LinearMath/Matrix3x3.h"
-
 #include "control_node.hpp"
 
-ControlNode::ControlNode(): Node("control"), control_(robot::ControlCore(this->get_logger()))
-{
-  processParameters();
+ControlNode::ControlNode()
+    : Node("control_node"), path_received_(false), odom_received_(false),
+      lookahead_distance_(1.0), max_linear_speed_(0.5), max_angular_speed_(1.0) {
+    
+    path_sub_ = this->create_subscription<nav_msgs::msg::Path>(
+        "/path", 10, std::bind(&ControlNode::pathCallback, this, std::placeholders::_1));
 
-  // Initialize subscribers and publisher
-  path_subscriber_ = this->create_subscription<nav_msgs::msg::Path>(
-    path_topic_, 10, std::bind(&ControlNode::pathCallback, this, std::placeholders::_1));
+    odom_sub_ = this->create_subscription<nav_msgs::msg::Odometry>(
+        "/odom/filtered", 10, std::bind(&ControlNode::odomCallback, this, std::placeholders::_1));
 
-  odom_subscriber_ = this->create_subscription<nav_msgs::msg::Odometry>(
-    odom_topic_, 10, std::bind(&ControlNode::odomCallback, this, std::placeholders::_1));
+    cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 10);
 
-  cmd_vel_publisher_ = this->create_publisher<geometry_msgs::msg::Twist>(cmd_vel_topic_, 10);
-
-  timer_ = this->create_wall_timer(
-    std::chrono::milliseconds(control_period_ms_),
-    std::bind(&ControlNode::timerCallback, this)
-  );
-
-  control_.initControlCore(lookahead_distance_, max_steering_angle_, steering_gain_, linear_velocity_);
+    RCLCPP_INFO(this->get_logger(), "Control Node initialized");
 }
 
-void ControlNode::processParameters() {
-  // Declare all ROS2 Parameters
-  this->declare_parameter<std::string>("path_topic", "/path");
-  this->declare_parameter<std::string>("odom_topic", "/odom/filtered");
-  this->declare_parameter<std::string>("cmd_vel_topic", "/cmd_vel");
-  this->declare_parameter<int>("control_period_ms", 100);
-  this->declare_parameter<double>("lookahead_distance", 1.0);
-  this->declare_parameter<double>("steering_gain", 1.5);
-  this->declare_parameter<double>("max_steering_angle", 1.5);
-  this->declare_parameter<double>("linear_velocity", 1.5);
-
-  // Retrieve parameters and store them in member variables
-  path_topic_ = this->get_parameter("path_topic").as_string();
-  odom_topic_ = this->get_parameter("odom_topic").as_string();
-  cmd_vel_topic_ = this->get_parameter("cmd_vel_topic").as_string();
-  control_period_ms_ = this->get_parameter("control_period_ms").as_int();
-  lookahead_distance_ = this->get_parameter("lookahead_distance").as_double();
-  steering_gain_ = this->get_parameter("steering_gain").as_double();
-  max_steering_angle_ = this->get_parameter("max_steering_angle").as_double();
-  linear_velocity_ = this->get_parameter("linear_velocity").as_double();
+void ControlNode::pathCallback(const nav_msgs::msg::Path::SharedPtr path_msg) {
+    current_path_ = *path_msg;
+    path_received_ = true;
+    computeControlCommands();
 }
 
-void ControlNode::pathCallback(const nav_msgs::msg::Path::SharedPtr msg)
-{
-  control_.updatePath(*msg);
+void ControlNode::odomCallback(const nav_msgs::msg::Odometry::SharedPtr odom_msg) {
+    current_pose_ = odom_msg->pose.pose;
+    odom_received_ = true;
+    if (path_received_) {
+        computeControlCommands();
+    }
 }
 
-void ControlNode::odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg)
-{
-  robot_x_ = msg->pose.pose.position.x;
-  robot_y_ = msg->pose.pose.position.y;
+void ControlNode::computeControlCommands() {
+    if (current_path_.poses.empty()) {
+        RCLCPP_WARN(this->get_logger(), "Path is empty, stopping the robot.");
+        geometry_msgs::msg::Twist stop_msg;
+        cmd_vel_pub_->publish(stop_msg);
+        return;
+    }
 
-  // Get robot's orientation (yaw) from quaternion using utility function
-  robot_theta_ = quaternionToYaw(
-    msg->pose.pose.orientation.x,
-    msg->pose.pose.orientation.y,
-    msg->pose.pose.orientation.z,
-    msg->pose.pose.orientation.w
-  );
+    // Find the closest waypoint within the lookahead distance
+    geometry_msgs::msg::PoseStamped target_pose;
+    bool target_found = false;
+
+    for (const auto &pose : current_path_.poses) {
+        double dx = pose.pose.position.x - current_pose_.position.x;
+        double dy = pose.pose.position.y - current_pose_.position.y;
+        double distance = std::sqrt(dx * dx + dy * dy);
+
+        if (distance > lookahead_distance_) {
+            target_pose = pose;
+            target_found = true;
+            break;
+        }
+    }
+
+    if (!target_found) {
+        RCLCPP_WARN(this->get_logger(), "No target waypoint found within lookahead distance.");
+        return;
+    }
+
+    // Compute control commands using Pure Pursuit
+    double dx = target_pose.pose.position.x - current_pose_.position.x;
+    double dy = target_pose.pose.position.y - current_pose_.position.y;
+
+    double yaw = std::atan2(2.0 * (current_pose_.orientation.w * current_pose_.orientation.z),
+                            1.0 - 2.0 * (current_pose_.orientation.z * current_pose_.orientation.z));
+
+    double target_angle = std::atan2(dy, dx);
+    double angle_diff = target_angle - yaw;
+
+    // Normalize angle to [-pi, pi]
+    while (angle_diff > M_PI) angle_diff -= 2.0 * M_PI;
+    while (angle_diff < -M_PI) angle_diff += 2.0 * M_PI;
+
+    geometry_msgs::msg::Twist cmd_vel;
+    cmd_vel.linear.x = std::min(max_linear_speed_, std::sqrt(dx * dx + dy * dy));
+    cmd_vel.angular.z = std::min(max_angular_speed_, angle_diff);
+
+    cmd_vel_pub_->publish(cmd_vel);
+    RCLCPP_INFO(this->get_logger(), "Published velocity command: linear=%.2f, angular=%.2f",
+                cmd_vel.linear.x, cmd_vel.angular.z);
 }
 
-void ControlNode::followPath()
-{
-  if (control_.isPathEmpty())
-  {
-    RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 3000, "Path is empty. Waiting for new path.");
-  }
-
-  // Calculate control commands
-  geometry_msgs::msg::Twist cmd_vel = control_.calculateControlCommand(robot_x_, robot_y_, robot_theta_);
-  cmd_vel_publisher_->publish(cmd_vel);
-}
-
-void ControlNode::timerCallback()
-{
-  followPath();
-}
-
-double ControlNode::quaternionToYaw(double x, double y, double z, double w)
-{
-    // Using tf2 to convert to RPY
-    tf2::Quaternion q(x, y, z, w);
-    tf2::Matrix3x3 m(q);
-    double roll, pitch, yaw;
-    m.getRPY(roll, pitch, yaw);
-    return yaw;
-}
-
-int main(int argc, char ** argv)
-{
-  rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<ControlNode>());
-  rclcpp::shutdown();
-  return 0;
+int main(int argc, char **argv) {
+    rclcpp::init(argc, argv);
+    rclcpp::spin(std::make_shared<ControlNode>());
+    rclcpp::shutdown();
+    return 0;
 }

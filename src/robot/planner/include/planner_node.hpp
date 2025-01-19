@@ -2,30 +2,25 @@
 #define PLANNER_NODE_HPP_
 
 #include <mutex>
-
 #include "rclcpp/rclcpp.hpp"
 #include "nav_msgs/msg/occupancy_grid.hpp"
 #include "nav_msgs/msg/path.hpp"
 #include "nav_msgs/msg/odometry.hpp"
 #include "geometry_msgs/msg/point_stamped.hpp"
-
 #include "planner_core.hpp"
 
 class PlannerNode : public rclcpp::Node {
-  public:
+public:
     PlannerNode();
-
     void processParameters();
-
     void mapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr map_msg);
-    void goalCallback(const geometry_msgs::msg::PointStamped::SharedPtr  goal_msg);
+    void goalCallback(const geometry_msgs::msg::PointStamped::SharedPtr goal_msg);
     void odomCallback(const nav_msgs::msg::Odometry::SharedPtr odom_msg);
     void timerCallback();
-
     void publishPath();
     void resetGoal();
 
-  private:
+private:
     robot::PlannerCore planner_;
 
     // Subscriptions
@@ -48,10 +43,12 @@ class PlannerNode : public rclcpp::Node {
     bool active_goal_;
     rclcpp::Time plan_start_time_;
 
-    // Robot odometry (x,y). For simplicity, ignoring orientation usage here.
+    // Robot odometry
     bool have_odom_;
     double odom_x_;
     double odom_y_;
+    double planned_x_;
+    double planned_y_;
 
     // Parameters
     std::string map_topic_;
@@ -64,7 +61,6 @@ class PlannerNode : public rclcpp::Node {
 
     double goal_tolerance_;
     double plan_timeout_;
-
 };
 
 #endif 
