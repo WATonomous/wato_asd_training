@@ -1,71 +1,104 @@
-#include <chrono>
-#include <memory>
-
 #include "costmap_node.hpp"
 
-CostmapNode::CostmapNode() : Node("costmap"), costmap_(robot::CostmapCore(this->get_logger())) {
-  // load ROS2 yaml parameters
-  processParameters();
+CostmapNode::CostmapNode() 
+    : Node("costmap_node"), width_(200), height_(200), resolution_(0.1),
+      origin_x_(-10.0), origin_y_(-10.0), inflation_radius_(1.0) {
+    
+    laser_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
+        "/lidar", 10, std::bind(&CostmapNode::laserCallback, this, std::placeholders::_1));
+    costmap_pub_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("/costmap", 10);
 
-  laser_scan_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
-    laserscan_topic_, 10, 
-    std::bind(
-      &CostmapNode::laserScanCallback, this, 
-      std::placeholders::_1));
-
-  costmap_pub_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>(
-    costmap_topic_, 10);
-
-  RCLCPP_INFO(this->get_logger(), "Initialized ROS Constructs");
-
-  costmap_.initCostmap(
-    resolution_, 
-    width_, 
-    height_, 
-    origin_,
-    inflation_radius_
-  );
-
-  RCLCPP_INFO(this->get_logger(), "Initialized Costmap Core");
+    costmap_.resize(width_ * height_, 0);
+    RCLCPP_INFO(this->get_logger(), "Costmap Node initialized");
 }
 
-void CostmapNode::processParameters() {
-  // Declare all ROS2 Parameters
-  this->declare_parameter<std::string>("laserscan_topic", "/lidar");
-  this->declare_parameter<std::string>("costmap_topic", "/costmap");
-  this->declare_parameter<double>("costmap.resolution", 0.1);
-  this->declare_parameter<int>("costmap.width", 100);
-  this->declare_parameter<int>("costmap.height", 100);
-  this->declare_parameter<double>("costmap.origin.position.x", -5.0);
-  this->declare_parameter<double>("costmap.origin.position.y", -5.0);
-  this->declare_parameter<double>("costmap.origin.orientation.w", 1.0);
-  this->declare_parameter<double>("costmap.inflation_radius", 1.0);
-
-  // Retrieve parameters and store them in member variables
-  laserscan_topic_ = this->get_parameter("laserscan_topic").as_string();
-  costmap_topic_ = this->get_parameter("costmap_topic").as_string();
-  resolution_ = this->get_parameter("costmap.resolution").as_double();
-  width_ = this->get_parameter("costmap.width").as_int();
-  height_ = this->get_parameter("costmap.height").as_int();
-  origin_.position.x = this->get_parameter("costmap.origin.position.x").as_double();
-  origin_.position.y = this->get_parameter("costmap.origin.position.y").as_double();
-  origin_.orientation.w = this->get_parameter("costmap.origin.orientation.w").as_double();
-  inflation_radius_ = this->get_parameter("costmap.inflation_radius").as_double();
+void CostmapNode::initializeCostmap() {
+    std::fill(costmap_.begin(), costmap_.end(), 0);  // Reset the costmap to free space
 }
 
-void CostmapNode::laserScanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg) const {
-  // Update the costmap according to the laser scan
-  costmap_.updateCostmap(msg);
-  // publish the costmap
-  nav_msgs::msg::OccupancyGrid costmap_msg = *costmap_.getCostmapData();
-  costmap_msg.header = msg->header;
-  costmap_pub_->publish(costmap_msg);
+void CostmapNode::convertToGrid(double range, double angle, int &x_grid, int &y_grid) {
+    double x_world = range * cos(angle);
+    double y_world = range * sin(angle);
+
+    x_grid = static_cast<int>((x_world - origin_x_) / resolution_);
+    y_grid = static_cast<int>((y_world - origin_y_) / resolution_);
 }
 
-int main(int argc, char ** argv)
-{
-  rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<CostmapNode>());
-  rclcpp::shutdown();
-  return 0;
+void CostmapNode::markObstacle(int x_grid, int y_grid) {
+    if (x_grid >= 0 && x_grid < width_ && y_grid >= 0 && y_grid < height_) {
+        int index = y_grid * width_ + x_grid;
+        costmap_[index] = 100;  // Mark as an obstacle
+    }
+}
+
+void CostmapNode::inflateObstacles() {
+    std::vector<int8_t> inflated_costmap = costmap_;  // Copy the current costmap
+
+    int cells_inflation_radius = static_cast<int>(inflation_radius_ / resolution_);
+    for (int y = 0; y < height_; ++y) {
+        for (int x = 0; x < width_; ++x) {
+            int index = y * width_ + x;
+            if (costmap_[index] == 100) {  // If this cell is an obstacle
+                for (int dy = -cells_inflation_radius; dy <= cells_inflation_radius; ++dy) {
+                    for (int dx = -cells_inflation_radius; dx <= cells_inflation_radius; ++dx) {
+                        int nx = x + dx;
+                        int ny = y + dy;
+                        if (nx >= 0 && nx < width_ && ny >= 0 && ny < height_) {
+                            double distance = std::sqrt(dx * dx + dy * dy) * resolution_;
+                            if (distance <= inflation_radius_) {
+                                int neighbor_index = ny * width_ + nx;
+                                inflated_costmap[neighbor_index] = static_cast<int8_t>(
+                                    std::max(static_cast<int>(inflated_costmap[neighbor_index]), 
+                                             static_cast<int>(100 * (1 - distance / inflation_radius_)))
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    costmap_ = inflated_costmap;  // Update the costmap
+}
+
+void CostmapNode::publishCostmap() {
+    nav_msgs::msg::OccupancyGrid costmap_msg;
+    costmap_msg.header.stamp = this->now();
+    costmap_msg.header.frame_id = "map";
+
+    costmap_msg.info.resolution = resolution_;
+    costmap_msg.info.width = width_;
+    costmap_msg.info.height = height_;
+    costmap_msg.info.origin.position.x = origin_x_;
+    costmap_msg.info.origin.position.y = origin_y_;
+    costmap_msg.info.origin.position.z = 0.0;
+
+    costmap_msg.data = costmap_;
+
+    costmap_pub_->publish(costmap_msg);
+}
+
+void CostmapNode::laserCallback(const sensor_msgs::msg::LaserScan::SharedPtr scan) {
+    initializeCostmap();
+
+    for (size_t i = 0; i < scan->ranges.size(); ++i) {
+        double angle = scan->angle_min + i * scan->angle_increment;
+        double range = scan->ranges[i];
+        if (range > scan->range_min && range < scan->range_max) {
+            int x_grid, y_grid;
+            convertToGrid(range, angle, x_grid, y_grid);
+            markObstacle(x_grid, y_grid);
+        }
+    }
+
+    inflateObstacles();
+    publishCostmap();
+}
+
+int main(int argc, char **argv) {
+    rclcpp::init(argc, argv);
+    rclcpp::spin(std::make_shared<CostmapNode>());
+    rclcpp::shutdown();
+    return 0;
 }

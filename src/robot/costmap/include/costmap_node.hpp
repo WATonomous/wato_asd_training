@@ -4,36 +4,31 @@
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/laser_scan.hpp"
 #include "nav_msgs/msg/occupancy_grid.hpp"
-
-#include "costmap_core.hpp"
+#include <vector>
+#include <cmath>
 
 class CostmapNode : public rclcpp::Node {
-  public:
-    // Costmap Node constructor
+public:
     CostmapNode();
-    
-    // Retrieves all the parameters and their values in params.yaml
-    void processParameters();
-    
-    // Given a laserscan, it will send it into CostmapCore for processing and then
-    // retrieve the costmap
-    void laserScanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg) const;
 
-  private:
-    robot::CostmapCore costmap_;
+private:
+    void laserCallback(const sensor_msgs::msg::LaserScan::SharedPtr scan);
+    void initializeCostmap();
+    void convertToGrid(double range, double angle, int &x_grid, int &y_grid);
+    void markObstacle(int x_grid, int y_grid);
+    void inflateObstacles();
+    void publishCostmap();
 
-    rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr laser_scan_sub_;
+    rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr laser_sub_;
     rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr costmap_pub_;
 
-    std::string laserscan_topic_;
-    std::string costmap_topic_;
-
-    double resolution_;
+    std::vector<int8_t> costmap_;
     int width_;
     int height_;
-    geometry_msgs::msg::Pose origin_;
+    double resolution_;
+    double origin_x_;
+    double origin_y_;
     double inflation_radius_;
-
 };
 
-#endif 
+#endif
