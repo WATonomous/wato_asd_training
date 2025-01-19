@@ -41,6 +41,7 @@ double MapMemoryNode::quaternionToYaw(const geometry_msgs::msg::Quaternion& q) {
 void MapMemoryNode::updateMap() {
 	if (should_update_map_ && costmap_updated_) {
 		nav_msgs::msg::OccupancyGrid::SharedPtr global_map = map_memory_.integrateCostmap(latest_costmap_, robot_x_, robot_y_, robot_yaw_);
+		global_map->header.frame_id = "sim_world";
 		map_pub_->publish(*global_map);
 		should_update_map_ = false;
 	}

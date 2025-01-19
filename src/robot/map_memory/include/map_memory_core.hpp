@@ -22,6 +22,9 @@ class MapMemoryCore {
 	int height_cells;
 	double resolution;
 	std::pair<double, double> origin;
+
+	std::pair<int, int> transformToGlobalCoordinates(
+		const nav_msgs::msg::OccupancyGrid::SharedPtr& local_costmap, int local_x, int local_y, double robot_x, double robot_y, double robot_yaw);
 };
 
 }  
