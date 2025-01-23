@@ -1,16 +1,15 @@
-name: Test
+name: Example Workflow
 
 on:
-push:
-  branches: [ main ]
-pull_request:
-  branches: [ main ]
-
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   test-job:
     runs-on: slurm-runner-small
     steps:
-    - name: Check wato-drive access
-      run: |
-        ls /mnt/
+      - name: Check wato-drive access
+        run: |
+          ls /mnt/
