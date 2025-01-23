@@ -12,4 +12,4 @@ jobs:
     steps:
       - name: Check wato-drive access
         run: |
-          ls /mnt/
+          ls /mnt/wato-drive/
