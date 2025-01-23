@@ -1,0 +1,16 @@
+name: Test
+
+on:
+push:
+  branches: [ master ]
+pull_request:
+  branches: [ master ]
+
+
+jobs:
+  test-job:
+    runs-on: slurm-runner-small
+    steps:
+    - name: Check wato-drive access
+      run: |
+        ls /mnt/
