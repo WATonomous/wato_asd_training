@@ -12,6 +12,8 @@ COPY src/robot/map_memory map_memory
 COPY src/robot/planner planner
 COPY src/robot/control control
 COPY src/robot/bringup_robot bringup_robot
+COPY src/robot/localization nav2_gps_waypoint_follower_demo
+
 
 # Scan for rosdeps
 RUN apt-get -qq update && rosdep update && \
