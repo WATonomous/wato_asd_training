@@ -14,7 +14,6 @@ COPY src/robot/control control
 COPY src/robot/bringup_robot bringup_robot
 COPY src/robot/localization nav2_gps_waypoint_follower_demo
 
-
 # Scan for rosdeps
 RUN apt-get -qq update && rosdep update && \
     rosdep install --from-paths . --ignore-src -r -s \
@@ -29,7 +28,8 @@ FROM ${BASE_IMAGE} AS dependencies
 
 # Install Rosdep requirements
 COPY --from=source /tmp/colcon_install_list /tmp/colcon_install_list
-RUN apt-fast install -qq -y --no-install-recommends $(cat /tmp/colcon_install_list)
+RUN apt-get -qq update && \
+    apt-fast install -qq -y --no-install-recommends $(cat /tmp/colcon_install_list)
 
 # Copy in source code from source stage
 WORKDIR ${AMENT_WS}

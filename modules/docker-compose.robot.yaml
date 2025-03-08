@@ -12,6 +12,12 @@ services:
     profiles:
       - deploy
     command: /bin/bash -c "ros2 launch bringup_robot robot.launch.py"
+    environment:
+      - DISPLAY=${DISPLAY}  # Pass host display
+      - TURTLEBOT3_MODEL=waffle
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix  # Mount X11 socket
+      - ~/.Xauthority:/root/.Xauthority  # Mount Xauthority file
   
   robot_dev:
     build: *robot_build

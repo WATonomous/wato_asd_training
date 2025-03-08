@@ -94,3 +94,14 @@ def generate_launch_description():
     ld.add_action(odometry_spoof_node)
 
     return ld
+
+    #################### nav2 gps module #####################
+    localization_pkg_prefix = get_package_share_directory('nav2_gps_waypoint_follower_demo')  # Use the package name from your Dockerfile
+    gazebo_gps_launch_file = os.path.join(
+        localization_pkg_prefix, 'launch', 'gazebo_gps_world.launch.py'
+    )
+    
+    gazebo_gps_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(gazebo_gps_launch_file),
+    )
+    ld.add_action(gazebo_gps_launch)

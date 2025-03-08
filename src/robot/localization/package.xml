@@ -8,12 +8,13 @@
   <maintainer email="stevenmacenski@gmail.com">Steve Macenski</maintainer>
   <license>MIT</license>
 
-  <!-- <depend>navigation2</depend>
+  <depend>navigation2</depend>
   <depend>robot_localization</depend>
   <depend>mapviz</depend>
   <depend>mapviz_plugins</depend>
-  <depend>tile_map</depend> -->
-  <exec_depend>navigation2</exec_depend>
+  <depend>tile_map</depend>
+  <depend>turtlebot3_gazebo</depend>
+  <depend>nav2_bringup</depend>
 
 
   <export>
