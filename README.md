@@ -12,3 +12,7 @@ These steps are to setup the monorepo to work on your own PC. We utilize docker 
 Link to Onboarding Assignment: https://wiki.watonomous.ca/
 
 ## Steps to run
+1. xhost +local:
+2. ./watod build
+3. ./watod up
+4. ./watod run robot ros2 launch nav2_gps_waypoint_follower_demo gazebo_gps_world.launch.py
