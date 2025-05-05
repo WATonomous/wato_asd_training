@@ -17,13 +17,13 @@ CostmapNode::CostmapNode(double resolution, int grid_width, int grid_height,
 }
 
 void CostmapNode::initCostmap() {
-  RCLCPP_INFO(this->get_logger(), "Initializing costmap");
+  // RCLCPP_INFO(this->get_logger(), "Initializing costmap");
 
   costmap_grid_.clear(); // clear the previous costmap grid
   costmap_grid_.resize(height_, std::vector<int>(width_, 0)); // all cells init with 0
 
-  RCLCPP_INFO(this->get_logger(), "Costmap initialized with resolution: %f, width: %d, height: %d",
-              resolution_, width_, height_);
+  // RCLCPP_INFO(this->get_logger(), "Costmap initialized with resolution: %f, width: %d, height: %d",
+              // resolution_, width_, height_);
 }
 
 void CostmapNode::convert2Grid(double range, double angle, int& x_grid, int& y_grid) {
@@ -59,7 +59,7 @@ double CostmapNode::getCost(int x, int y, int new_x, int new_y) {
 }
 
 void CostmapNode::inflateObstacles() {
-  RCLCPP_INFO(this->get_logger(), "Inflating obstacles");
+  // RCLCPP_INFO(this->get_logger(), "Inflating obstacles");
 
   int inflation_radius_cells = static_cast<int>(inflation_radius_ / resolution_); // convert in units of # cells
 
@@ -122,7 +122,7 @@ void CostmapNode::publishCostmap() {
 }
 
 void CostmapNode::lidarCallback(const sensor_msgs::msg::LaserScan::SharedPtr scan) {
-  RCLCPP_INFO(this->get_logger(), "Lidar scan data received");
+  // RCLCPP_INFO(this->get_logger(), "Lidar scan data received");
 
   initCostmap(); 
 
@@ -137,7 +137,7 @@ void CostmapNode::lidarCallback(const sensor_msgs::msg::LaserScan::SharedPtr sca
     }
   }
 
-  RCLCPP_INFO(this->get_logger(), "Lidar scan data processed");
+  // RCLCPP_INFO(this->get_logger(), "Lidar scan data processed");
 
   inflateObstacles(); // Inflate the obstacles after marking them
   publishCostmap(); // Publish the costmap after inflating
