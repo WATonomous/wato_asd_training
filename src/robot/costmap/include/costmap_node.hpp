@@ -11,7 +11,8 @@
 class CostmapNode : public rclcpp::Node {
   public:
     CostmapNode(double resolution, int width, int height, int inflation_radius, int max_cost); 
-
+ 
+  private:
     void lidarCallback(const sensor_msgs::msg::LaserScan::SharedPtr scan);
 
     void initCostmap();
@@ -27,8 +28,7 @@ class CostmapNode : public rclcpp::Node {
     void inflateObstacles();
 
     void publishCostmap();
- 
-  private:
+
     // costmap variables
     robot::CostmapCore costmap_;
     std::vector<std::vector<int>> costmap_grid_;

@@ -99,7 +99,6 @@ void CostmapNode::inflateObstacles() {
 }
 
 void CostmapNode::publishCostmap() {
-  RCLCPP_INFO(this->get_logger(), "Publishing costmap");
 
   costmap_msg_.header.frame_id = "robot/chassis/lidar"; // frame_id for the costmap
   costmap_msg_.header.stamp = this->now();
