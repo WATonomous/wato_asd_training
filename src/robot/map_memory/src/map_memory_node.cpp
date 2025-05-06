@@ -2,13 +2,12 @@
 #include <cmath>
 #include <algorithm>
 #include <chrono>
-#include <tf2/LinearMath/Quaternion.h>
-#include <tf2/LinearMath/Matrix3x3.h>
-
+  
 #include "map_memory_node.hpp"
 
 MapMemoryNode::MapMemoryNode()
-    : Node("map_memory"), map_memory_(robot::MapMemoryCore(this->get_logger())),
+    : Node("map_memory"),
+      map_memory_(this->get_logger()),
       last_x_(0.0), last_y_(0.0), distance_threshold_(1.5),
       current_x_(0.0), current_y_(0.0), current_theta_(0.0) {
 
@@ -41,15 +40,14 @@ void MapMemoryNode::odomCallback(const nav_msgs::msg::Odometry::SharedPtr odom) 
     current_x_ = odom->pose.pose.position.x;
     current_y_ = odom->pose.pose.position.y;
 
-    // Extract orientation and convert to yaw
-    tf2::Quaternion q(
-        odom->pose.pose.orientation.x,
-        odom->pose.pose.orientation.y,
-        odom->pose.pose.orientation.z,
-        odom->pose.pose.orientation.w);
-    tf2::Matrix3x3 m(q);
-    double roll, pitch;
-    m.getRPY(roll, pitch, current_theta_);
+    // Extract orientation and compute yaw directly
+    double x = odom->pose.pose.orientation.x;
+    double y = odom->pose.pose.orientation.y;
+    double z = odom->pose.pose.orientation.z;
+    double w = odom->pose.pose.orientation.w;
+
+    // Compute yaw (rotation around z-axis)
+    current_theta_ = std::atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z));
 
     // Calculate distance traveled
     double distance = std::sqrt(std::pow((current_x_ - last_x_), 2) + std::pow((current_y_ - last_y_), 2));
@@ -82,13 +80,16 @@ void MapMemoryNode::integrateCostmap() {
                 double global_y = current_y_ + local_x * sin(current_theta_) + local_y * cos(current_theta_);
 
                 // Convert global coordinates to global grid indices
-                int global_grid_x = int(std::floor(dim / 2 + global_x / res));
-                int global_grid_y = int(std::floor(dim / 2 + global_y / res));
+                int global_grid_x = int(std::floor((global_x - global_map_.info.origin.position.x) / res));
+                int global_grid_y = int(std::floor((global_y - global_map_.info.origin.position.y) / res));
 
-                // Update the global map
-                global_map_.data[global_grid_y * dim + global_grid_x] = std::max(
-                    global_map_.data[global_grid_y * dim + global_grid_x],
-                    latest_costmap_.data[local_grid_y * dim + local_grid_x]);
+                // Check bounds and update the global map
+                if (global_grid_x >= 0 && global_grid_x < global_map_.info.width &&
+                    global_grid_y >= 0 && global_grid_y < global_map_.info.height) {
+                    global_map_.data[global_grid_y * global_map_.info.width + global_grid_x] = std::max(
+                        global_map_.data[global_grid_y * global_map_.info.width + global_grid_x],
+                        latest_costmap_.data[local_grid_y * dim + local_grid_x]);
+                }
             }
         }
     }

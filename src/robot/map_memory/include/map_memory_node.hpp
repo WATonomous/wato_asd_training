@@ -33,14 +33,14 @@ private:
     bool should_update_map_ = false;
 
     // Robot state
-    double last_x_ = 0.0;
-    double last_y_ = 0.0;
-    double current_x_ = 0.0;
-    double current_y_ = 0.0;
-    double current_theta_ = 0.0;
+    double last_x_;
+    double last_y_;
+    double current_x_;
+    double current_y_;
+    double current_theta_;
 
     // Parameters
-    const double distance_threshold_ = 1.5;
+    const double distance_threshold_;
 
     // Callback functions
     void costmapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr map);
