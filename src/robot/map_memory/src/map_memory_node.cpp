@@ -27,6 +27,10 @@ MapMemoryNode::MapMemoryNode()
 }
 
 void MapMemoryNode::costmapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr map) {
+    if (costmap_update_counter_ < 5) {
+        costmap_update_counter_++;
+    }
+
     if (global_map_.info.width == 0) {
         global_map_ = *map;
         global_map_.header.frame_id = "sim_world"; // Set the frame ID for the global map
@@ -59,10 +63,21 @@ void MapMemoryNode::odomCallback(const nav_msgs::msg::Odometry::SharedPtr odom) 
 }
 
 void MapMemoryNode::updateMap() {
-    if (should_update_map_ && costmap_updated_) {
+    if (costmap_update_counter_ < 5) {
+        RCLCPP_INFO(this->get_logger(), "Waiting for costmap to be updated");
+        return;
+    }
+
+    if (!map_initialized_) {
+        RCLCPP_INFO(this->get_logger(), "Map Memory not initialized yet");
+        should_update_map_ = true;
+        map_initialized_ = true;
+    }
+    if ((should_update_map_ && costmap_updated_)) {
         integrateCostmap();
         map_pub_->publish(global_map_);
         should_update_map_ = false;
+        RCLCPP_INFO(this->get_logger(), "Map Memory updated");
     }
 }
 

@@ -31,6 +31,9 @@ private:
     // Flags
     bool costmap_updated_ = false;
     bool should_update_map_ = false;
+    bool map_initialized_ = false;
+
+    int costmap_update_counter_ = 0;
 
     // Robot state
     double last_x_;
