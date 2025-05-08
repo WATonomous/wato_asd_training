@@ -140,9 +140,9 @@ int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
 
-  double resolution = 0.1; // meters
-  int grid_width = 300; // # of cells in x direction
-  int grid_height = 300; // # of cells in y direction
+  double resolution = 0.3; // meters
+  int grid_width = 100; // # of cells in x direction
+  int grid_height = 100; // # of cells in y direction
   int inflation_radius = 1; // in meters
   int max_cost = 100; // max cost for occupied cells
 
