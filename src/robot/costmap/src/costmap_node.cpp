@@ -17,13 +17,8 @@ CostmapNode::CostmapNode(double resolution, int grid_width, int grid_height,
 }
 
 void CostmapNode::initCostmap() {
-  // RCLCPP_INFO(this->get_logger(), "Initializing costmap");
-
   costmap_grid_.clear(); // clear the previous costmap grid
   costmap_grid_.resize(height_, std::vector<int>(width_, 0)); // all cells init with 0
-
-  // RCLCPP_INFO(this->get_logger(), "Costmap initialized with resolution: %f, width: %d, height: %d",
-              // resolution_, width_, height_);
 }
 
 void CostmapNode::convert2Grid(double range, double angle, int& x_grid, int& y_grid) {
@@ -117,7 +112,6 @@ void CostmapNode::publishCostmap() {
   }
 
   costmap_pub_->publish(costmap_msg_); // Publish the costmap message
-  RCLCPP_INFO(this->get_logger(), "Costmap published");
 }
 
 void CostmapNode::lidarCallback(const sensor_msgs::msg::LaserScan::SharedPtr scan) {
